@@ -10,7 +10,7 @@
         </template>
         <!-- 右侧搜索 -->
         <template #right>
-          <span class="iconfont icon-sousuo1"></span>
+          <span class="iconfont icon-sousuo1" @click="$router.push('/Search')" style="color:white"></span>
         </template>
       </van-nav-bar>
 
@@ -32,8 +32,8 @@
 </template>
 
 <script>
-import { GetTabs, journalism } from '@/api/index'
-
+import { journalism, UserChannels } from '@/api/index'
+import { SetToken } from '@/utils/token'
 import MainVue from '@/views/Content/Main/MainVue.vue'
 import EventBUS from '@/utils/eventBus'
 export default {
@@ -48,10 +48,17 @@ export default {
     }
   },
 
+  watch: {
+    '$store.state.Tab': function (newVal) {
+      SetToken('Tab', newVal)
+      this.TabsSelect = newVal
+    }
+  },
+
   async created () {
     try {
       // 获取tabs中的选项数据
-      const { data: res } = await GetTabs()
+      const { data: res } = await UserChannels()
       this.TabsList = res.data.channels
     } catch (error) {}
   },
@@ -95,7 +102,7 @@ export default {
       padding-right: 30px;
       .addBtn {
         position: absolute;
-        width: 0.8rem;
+        width: 50px;
         height: 100%;
         display: flex;
         align-items: center;

@@ -7,7 +7,7 @@ import { GetToken } from '@/utils/token'
 export default {
   created () {
     // 获取token当他的值不存在那么就跳转到登陆界面
-    if (!GetToken()) {
+    if (!GetToken('token')) {
       this.$router.push('/login')
     }
   }

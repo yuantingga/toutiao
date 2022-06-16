@@ -41,7 +41,7 @@ export default {
         // eslint-disable-next-line no-unused-vars
         const { data: res, status } = await login(values)
         // 设置token到本地缓存中
-        SetToken(res.data.token)
+        SetToken('token', res.data.token)
         Toast.success('登陆成功')
         this.$router.replace('/Index/Content')
         EventBus.$emit('UserClick', '/Index/Content')
