@@ -84,7 +84,6 @@ function PutChannel (obj) {
   })
 }
 function SearchResult (value) {
-  console.log(value)
   return axioss({
     url1: '/search',
     params: {

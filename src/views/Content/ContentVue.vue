@@ -10,7 +10,7 @@
         </template>
         <!-- 右侧搜索 -->
         <template #right>
-          <span class="iconfont icon-sousuo1" @click="$router.push('/Search')" style="color:white"></span>
+          <span class="iconfont icon-sousuo1" @click="Search" style="color:white"></span>
         </template>
       </van-nav-bar>
 
@@ -24,7 +24,7 @@
     <!-- 新闻信息列表组件封装，使用的是$stope中的数据进行发送网络请求进行遍历数据生成新闻列表 -->
     <div class="main">
       <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh">
-        <components is="MainVue"></components>
+      <MainVue></MainVue>
       </van-pull-refresh>
     </div>
 
@@ -60,9 +60,15 @@ export default {
       // 获取tabs中的选项数据
       const { data: res } = await UserChannels()
       this.TabsList = res.data.channels
+      SetToken('Router', JSON.stringify('/Index/Content'))
     } catch (error) {}
   },
   methods: {
+    Search () {
+      SetToken('Router', JSON.stringify('/Search'))
+      this.$store.commit('SetRouter', '/Search')
+      this.$router.push('/Search')
+    },
     Tabs (value) {
       // 将tabs发送选项状态的变化存储在本地缓存中使刷新页面并不会丢失选中元素
       sessionStorage.setItem('Tab', value)

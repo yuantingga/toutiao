@@ -1,8 +1,8 @@
 <template>
   <div class="Search">
     <div class="SearchHeader">
-      <span class="iconfont icon-zuo"></span>
-      <van-search @search="SearchKeyword" v-model="value" shape="round" :disabled="Disabled" background="cornflowerblue" placeholder="请输入搜索关键词" />
+      <span class="iconfont icon-zuo" @click="back"></span>
+      <van-search @search="SearchKeyword" v-model="value" shape="round"  background="cornflowerblue" placeholder="请输入搜索关键词" />
     </div>
     <div class="text">
       <span>搜索历史</span>
@@ -14,7 +14,7 @@
       </svg>
     </div>
     <div class="history">
-      <div @touchstart.prevent="$router.push(`/Search/${item}`)" v-for="(item, index) in history" :key="index">{{ item }}</div>
+      <div   v-for="(item, index) in history" :key="index">{{ item }}</div>
     </div>
   </div>
 </template>
@@ -28,7 +28,7 @@ export default {
   data () {
     return {
       value: '',
-      history: JSON.parse(GetToken('history')) || [],
+      history: GetToken('history') || [],
       // 缓存对象
       SearchCacheObj: {},
       Disabled: false
@@ -36,6 +36,7 @@ export default {
   },
   created () {
     // 获取历史记录
+
   },
   methods: {
     // 清空历史记录
@@ -46,22 +47,19 @@ export default {
       RemoveToken('SearchCacheObj')
     },
     async SearchKeyword () {
-      const boo = this.history.some((ele, inn) => ele === this.value)
       const value = this.value
-      if (boo) {
-        // 相同进行获取缓存对象中的数据
-        console.log(this.SearchCacheObj.value)
-        // 需要修改
-      } else {
-        this.history.push(value)
-        const { data: res } = await SearchResult({ q: value, page: 1 })
-        this.SearchCacheObj[this.value] = res.data.results
-
-        SetToken('SearchCacheObj', this.SearchCacheObj)
-        SetToken('history', JSON.stringify(this.history))
-      }
-      console.log(this.SearchCacheObj[this.value])
+      this.history.push(value)
+      SetToken('history', JSON.stringify(this.history))
+      SetToken('SearchCacheObj', JSON.stringify(this.SearchCacheObj))
+      this.$store.commit('SetValue', this.value)
+      this.$store.commit('SetRouter', '/Search')
+      this.$router.push(`/Search/${this.value}`)
+    },
+    back () {
+      this.$router.push('/Index/Content')
+      this.$store.commit('SetRouter', '/Index/Content')
     }
+
   }
 }
 
@@ -69,6 +67,8 @@ export default {
 
 <style lang="less" scoped>
 .Search {
+  height: 100%;
+  overflow: auto;
   .SearchHeader {
     position: relative;
     .icon-zuo {

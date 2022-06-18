@@ -1,7 +1,7 @@
 <template>
   <div>
     <van-list v-model="loading" :finished="finished" offset="0" finished-text="没有更多了" @load="onLoad">
-      <div v-if="list.length != 0">
+      <div v-if="list.length != 0" class="list">
         <van-cell v-for="(item, index) in list" :key="index" :title="item.title">
           <!-- 图片只有一张时 -->
           <template #label v-if="item.cover.type === 0">
@@ -49,6 +49,9 @@
 import { journalism, DisLike, report } from '@/api/index.js'
 import { Toast } from 'vant'
 import EventBUS from '@/utils/eventBus'
+// eslint-disable-next-line no-unused-vars
+import { GetToken, SetToken } from '@/utils/token'
+
 export default {
   data () {
     return {
@@ -58,8 +61,11 @@ export default {
       loading: false,
       finished: false,
       stope: this.$store.state.Tab,
+      flag: true,
       isLoading: false,
-      cacheObj: {},
+      cacheObj: GetToken('cacheObj') || {},
+      obj: [],
+      index: 0,
       show: false,
       show2: false,
       textId: '',
@@ -100,14 +106,21 @@ export default {
   watch: {
     // 监听tab数据的变化，当点击不同的选项就会渲染不同的数据
     '$store.state.Tab': async function (newval) {
-      if (this.cacheObj[newval]) {
-        this.list = this.cacheObj[newval]
-      } else {
-        const { data: res } = await journalism({ channel_id: this.$store.state.Tab, timestamp: Date.now() })
-        this.list = res.data.results
-        this.cacheObj[this.$store.state.Tab] = res.data.results
-      }
+      this.finished = false
+      this.loading = true
+      this.CellList = []
+      this.list = []
+      this.onLoad()
+    },
+
+    '$store.state.value': function (newVal) {
+      this.finished = false
+      this.loading = true
+      this.CellList = []
+      this.list = []
+      this.onLoad()
     }
+
   },
   methods: {
     PanelCancel () {
@@ -152,25 +165,59 @@ export default {
     },
     // list的上拉刷新
     onLoad () {
-      console.log('加载')
-      setTimeout(async () => {
-        console.log(Date.now())
-        const { data: res } = await journalism({ channel_id: this.$store.state.Tab, timestamp: Date.now() })
-        const arr = res.data.results
-        arr.forEach((element) => {
-          this.CellList.push(element)
-        })
-        for (let i = 0; i < 10; i++) {
-          console.log(this.CellList[this.list.length])
-          this.list.push(this.CellList[this.list.length])
-        }
+      setTimeout(() => {
+        const tab = GetToken('Tab') || 0
 
-        // 加载状态结束
-        this.loading = false
+        if (GetToken('Tab') in this.cacheObj) {
+          this.CellList = this.cacheObj[tab][this.index]
 
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true
+          for (let i = 0; i < 10; i++) {
+            this.list.push(this.CellList[i])
+          }
+
+          // 加载状态结束
+          this.loading = false
+
+          // 数据全部加载完成
+          if (this.list.length >= 40) {
+            this.finished = true
+            if (this.index > this.cacheObj.length) {
+              this.index = 0
+            } else {
+              this.index++
+            }
+          }
+        } else {
+          this.$store.dispatch('glideEvent').then((value) => {
+            if (value.length === 0) {
+              this.list = []
+              this.CellList = []
+              this.finished = true
+            }
+            console.log(value)
+            value.forEach(element => {
+              this.CellList.push(element)
+            // 缓存对象
+            })
+
+            this.obj.push(value)
+
+            for (let i = 0; i < 10; i++) {
+              if (this.CellList[this.list.length]) {
+                this.list.push(this.CellList[this.list.length])
+              }
+            }
+
+            // 加载状态结束
+            this.loading = false
+
+            // 数据全部加载完成
+            if (this.list.length >= 40) {
+              this.finished = true
+              this.cacheObj[tab] = this.obj
+              SetToken('cacheObj', JSON.stringify(this.cacheObj))
+            }
+          })
         }
       }, 1000)
     }
@@ -178,8 +225,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.van-list{
+.van-list {
   height: 100%;
+
 }
 .Cellright {
   width: 100px;

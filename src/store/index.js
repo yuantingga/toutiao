@@ -3,41 +3,49 @@ import Vuex from 'vuex'
 // eslint-disable-next-line no-unused-vars
 import { journalism, SearchResult } from '@/api/index.js'
 // eslint-disable-next-line no-unused-vars
-import { GetToken } from '@/utils/token'
+import { GetToken, SetToken } from '@/utils/token'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    Tab: parseInt(sessionStorage.getItem('Tab')) || 0,
-    CellList1: '',
-    IndexLoad: ''
+    Tab: '',
+    Route: GetToken('Router') || '/Index/Content',
+    glide: '',
+    inn: 1,
+    value: ''
+
   },
   getters: {
   },
   mutations: {
     setTab (state, value) {
       state.Tab = value
+      console.log()
     },
-    SetCellList (state, value) {
-      console.log(value)
+    SetValue (state, value) {
+      state.value = value
+    },
+    SetRouter (state, value) {
       // 初始化数据
-      state.CellList1 = value
+      console.log(value)
+      state.Route = value
     }
 
   },
   actions: {
-    async IndexLoadEven (context, value) {
-      console.log(context)
-      let d = 1552266004895
-      d += 4
-      const { data: res } = await journalism({ channel_id: context.state.Tab, timestamp: d })
-      context.state.IndexLoad = res.data.results
+    async glideEvent (context) {
+      console.log(context.state.Route)
+      if (context.state.Route === '/Index/Content') {
+        const { data: res } = await journalism({ channel_id: context.state.Tab, timestamp: Date.now() })
+        return res.data.results
+      } else if (context.state.Route === '/Search') {
+        const { data: res } = await SearchResult({ q: context.state.value, page: 1 })
+        return res.data.results
+      }
     },
-    async Search (context, value) {
-      let d = 1
-      d += 1
-      const { data: res } = await SearchResult({ q: value, page: d })
-      context.state.IndexLoad = res.data.results
+    async cutTab (context) {
+      const { data: res } = await journalism({ channel_id: context.state.Tab, timestamp: Date.now() })
+      return res.data.results
     }
   },
   modules: {
