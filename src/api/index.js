@@ -83,7 +83,16 @@ function PutChannel (obj) {
     }
   })
 }
+function SearchResult (value) {
+  console.log(value)
+  return axioss({
+    url1: '/search',
+    params: {
+      ...value
+    }
+  })
+}
 // articles
 export {
-  AllChannel, login, GetTabs, journalism, DisLike, report, UserChannels, AllChannels, PutChannel
+  AllChannel, login, GetTabs, journalism, DisLike, report, UserChannels, AllChannels, PutChannel, SearchResult
 }

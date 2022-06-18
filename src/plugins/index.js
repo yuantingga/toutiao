@@ -1,6 +1,8 @@
 import Vue from 'vue'
-import { Button, NavBar, Tabbar, TabbarItem, Form, Field, PullRefresh, Toast, Tab, Tabs, Cell, CellGroup, List, Lazyload, Image as VanImage, Loading, ActionSheet } from 'vant'
+import { Button, NavBar, Tabbar, TabbarItem, Form, Field, PullRefresh, Toast, Tab, Tabs, Cell, CellGroup, List, Lazyload, Image as VanImage, Loading, ActionSheet, Search, Empty } from 'vant'
 
+Vue.use(Empty)
+Vue.use(Search)
 Vue.use(ActionSheet)
 // 注册时可以配置额外的选项
 Vue.use(Lazyload, {

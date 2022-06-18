@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+    <van-list v-model="loading" :finished="finished" offset="0" finished-text="没有更多了" @load="onLoad">
       <div v-if="list.length != 0">
         <van-cell v-for="(item, index) in list" :key="index" :title="item.title">
           <!-- 图片只有一张时 -->
@@ -40,8 +40,8 @@
         </van-cell>
       </div>
     </van-list>
-    <van-action-sheet v-model="show" @select="PanelSelect " :actions="actions" cancel-text="取消" close-on-click-action />
-    <van-action-sheet v-model="show2" @select="PanelSelect2 " @cancel="PanelCancel" :actions="actions2" cancel-text="返回" close-on-click-action />
+    <van-action-sheet v-model="show" @select="PanelSelect" :actions="actions" cancel-text="取消" close-on-click-action />
+    <van-action-sheet v-model="show2" @select="PanelSelect2" @cancel="PanelCancel" :actions="actions2" cancel-text="返回" close-on-click-action />
   </div>
 </template>
 
@@ -53,7 +53,7 @@ export default {
   data () {
     return {
       // 通过
-      CellList: '',
+      CellList: [],
       list: [],
       loading: false,
       finished: false,
@@ -76,7 +76,6 @@ export default {
         { name: '内容不实', color: 'black' },
         { name: '侵权', color: 'black' },
         { name: '涉嫌违反犯罪', color: 'black' }
-
       ]
     }
   },
@@ -92,13 +91,6 @@ export default {
     }
   },
   async created () {
-    try {
-      const { data: res } = await journalism({ channel_id: this.$store.state.Tab, timestamp: Date.now() })
-      this.CellList = res.data.results
-      this.cacheObj[this.$store.state.Tab] = res.data.results
-    } catch (error) {
-      Toast('请检查网络')
-    }
     EventBUS.$on('refresh', (value) => {
       console.log(value)
       this.list = value
@@ -160,32 +152,35 @@ export default {
     },
     // list的上拉刷新
     onLoad () {
+      console.log('加载')
       setTimeout(async () => {
-        if (this.CellList.length > 0) {
-          for (let i = 0; i < 8; i++) {
-            this.list.push(this.CellList[this.list.length])
-          }
-          // 加载状态结束
-          this.loading = false
-          // 数据全部加载完成
-          if (this.list.length >= 50) {
-            this.finished = true
-          }
-        }
-        const { data: res } = await journalism({ channel_id: this.$store.state.Tab, timestamp: 1552266004855 })
+        console.log(Date.now())
+        const { data: res } = await journalism({ channel_id: this.$store.state.Tab, timestamp: Date.now() })
         const arr = res.data.results
+        arr.forEach((element) => {
+          this.CellList.push(element)
+        })
+        for (let i = 0; i < 10; i++) {
+          console.log(this.CellList[this.list.length])
+          this.list.push(this.CellList[this.list.length])
+        }
 
-        setTimeout(async () => {
-          arr.forEach((ele) => {
-            this.CellList.push(ele)
-          })
-        }, 1000)
-      }, 2000)
+        // 加载状态结束
+        this.loading = false
+
+        // 数据全部加载完成
+        if (this.list.length >= 40) {
+          this.finished = true
+        }
+      }, 1000)
     }
   }
 }
 </script>
 <style lang="less" scoped>
+.van-list{
+  height: 100%;
+}
 .Cellright {
   width: 100px;
 

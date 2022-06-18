@@ -7,6 +7,7 @@ import User from '@/views/User/UserIndex.vue'
 import Main from '@/views/Content/Main/MainVue.vue'
 import channel from '@/views/channel/channelVue.vue'
 import Search from '@/views/Search/SearchVue.vue'
+import SearchResult from '@/views/Search/SearchResult/SearchResult.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -30,7 +31,11 @@ const routes = [
   },
   { path: '/login', component: Login },
   { path: '/channel', component: channel },
-  { path: '/Search', component: Search }
+  {
+    path: '/Search',
+    component: Search
+  },
+  { path: '/Search/:value', component: SearchResult }
 
 ]
 

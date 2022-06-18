@@ -15,6 +15,7 @@
 .app{
   width: 100%;
   height: 100%;
+  overflow: hidden;
 
   .indexx{
     height: 100%;

@@ -50,7 +50,6 @@ export default {
 .index {
   width: 100%;
   height: 100%;
-  overflow: auto;
 
    /deep/.van-tabbar--fixed{
     position: sticky;
