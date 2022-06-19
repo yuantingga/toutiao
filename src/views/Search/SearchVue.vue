@@ -74,7 +74,6 @@ export default {
       this.$router.push('/Index/Content')
       this.$store.commit('SetRouter', '/Index/Content')
     }
-
   }
 }
 

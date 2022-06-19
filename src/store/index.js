@@ -45,7 +45,8 @@ export default new Vuex.Store({
       } else if (context.state.Route === '/Search') {
         // 判断是搜索页面
         const value = context.state.value
-        const { data: res } = await SearchResult({ q: value, page: 1 })
+        const { data: res } = await SearchResult({ q: value, page: context.state.inn })
+        context.state.inn++
         return res.data.results
       }
     },

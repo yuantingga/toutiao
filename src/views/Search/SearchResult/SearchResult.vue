@@ -1,6 +1,6 @@
 <template>
   <div class="SearchResult">
-    <van-nav-bar title="标题"  left-arrow @click-left="Back"  />
+    <van-nav-bar title="搜索结果" fixed  left-arrow @click-left="Back"  />
     <keep-alive>
         <MainVue></MainVue>
     </keep-alive>
@@ -37,5 +37,6 @@ export default {
 .SearchResult{
   height: 100%;
   overflow: auto;
+  padding-top:  1.22667rem;
 }
 </style>

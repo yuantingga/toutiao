@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-list v-model="loading" :finished="finished" offset="0" finished-text="没有更多了" @load="onLoad">
+    <van-list v-model="loading" :finished="finished"  finished-text="没有更多了" @load="onLoad">
       <div v-if="list.length != 0" class="list">
         <van-cell v-for="(item, index) in list" :key="index" :title="item.title">
           <!-- 图片只有一张时 -->
@@ -60,7 +60,8 @@ export default {
       // 加载渲染表格的数据对象
       list: [],
       // 缓存对象
-
+      cacheObj: {},
+      index: 0,
       // 加载状态结束
       loading: false,
       // 数据还没有加载完成
@@ -102,7 +103,6 @@ export default {
   },
   async created () {
     EventBUS.$on('refresh', (value) => {
-      console.log(value)
       this.list = value
     })
   },
@@ -112,11 +112,16 @@ export default {
     // 监听tab数据的变化
     // 在第一次渲染中或是下拉将数据进行获取到保存下来
     '$store.state.Tab': async function (newval) {
-      this.finished = false
-      this.loading = true
-      this.CellList = []
-      this.list = []
-      this.onLoad()
+      if (JSON.parse(GetToken(`${newval}`))) {
+        this.list = JSON.parse(GetToken(`${newval}`))
+      } else {
+        this.$store.dispatch('glideEvent').then((value) => {
+          this.list = value
+          SetToken(`${newval}`, JSON.stringify(value))
+        })
+      }
+
+      // 切换发送请求
     },
     // 这里是数据的切换导致显示不同额数据
     // 监听搜索关键字的变化，
@@ -167,19 +172,16 @@ export default {
     onLoad () {
       setTimeout(() => {
         // 这里是第一次加载数据，或是下拉数据的获取
+        console.log('加载')
         this.$store.dispatch('glideEvent').then((value) => {
           // 如果获取的是一个空数组那么
           if (value.length === 0) {
-            this.list = []
-            this.CellList = []
             this.finished = true
           }
-
-          // 将发送的请求后获取到的数据通过遍历的方式添加到 this.CellList中
-          // 再通过for循环一次添加到this。list中进行渲染单元格
           value.forEach(element => {
             this.CellList.push(element)
           })
+
           for (let i = 0; i < 10; i++) {
             if (this.CellList[this.list.length]) {
               this.list.push(this.CellList[this.list.length])
@@ -188,9 +190,6 @@ export default {
           // 加载状态结束
           this.loading = false
           // 数据全部加载完成
-          if (this.list.length >= 40) {
-            this.finished = true
-          }
         })
       }, 1000)
     }
