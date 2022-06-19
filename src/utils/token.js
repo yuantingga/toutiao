@@ -4,7 +4,8 @@ export function SetToken (name, value) {
 }
 // 读取token
 export function GetToken (value) {
-  return JSON.parse(sessionStorage.getItem(value))
+  const result = sessionStorage.getItem(value)
+  return result
 }
 // 清除token
 export function RemoveToken (value) {

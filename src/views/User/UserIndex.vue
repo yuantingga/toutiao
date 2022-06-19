@@ -1,5 +1,10 @@
 <template>
-  <div>个人用户界面</div>
+  <div class="User">
+    <div class="header">
+
+    </div>
+    <div class="UserMain"></div>
+  </div>
 </template>
 
 <script>
@@ -15,6 +20,15 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="less" scoped>
+.User{
+  display: flex;
+  height: 100%;
+  width: 100%;
+  .header{
+    width: 100%;
+    background: blue;
+    height: 250px;
+  }
+}
 </style>

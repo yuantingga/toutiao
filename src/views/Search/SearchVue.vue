@@ -27,11 +27,11 @@ import { SearchResult } from '@/api/index'
 export default {
   data () {
     return {
+      // 搜索关键字
       value: '',
-      history: GetToken('history') || [],
+      // 历史记录
+      history: JSON.parse(GetToken('history')) || []
       // 缓存对象
-      SearchCacheObj: {},
-      Disabled: false
     }
   },
   created () {
@@ -44,7 +44,6 @@ export default {
       // 发送清空历史记录请求
       this.history = []
       RemoveToken('history')
-
       // 点击清空历史记录
     },
     // 搜索事件

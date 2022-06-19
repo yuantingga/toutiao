@@ -55,20 +55,24 @@ import { GetToken, SetToken } from '@/utils/token'
 export default {
   data () {
     return {
-      // 通过
+      // 获取数据对象
       CellList: [],
+      // 加载渲染表格的数据对象
       list: [],
+      // 缓存对象
+
+      // 加载状态结束
       loading: false,
+      // 数据还没有加载完成
       finished: false,
+      // 获取contentVue组件中tabs选项卡选中的选项
       stope: this.$store.state.Tab,
-      flag: true,
-      isLoading: false,
-      cacheObj: GetToken('cacheObj') || {},
-      obj: [],
-      index: 0,
+      // 面板的显示于隐藏
       show: false,
       show2: false,
+      // 面板点击的选项id
       textId: '',
+      // 面板显示内容
       actions: [
         { name: '不感兴趣', color: 'black' },
         { name: '反馈垃圾内容', color: 'black' }
@@ -104,7 +108,9 @@ export default {
   },
 
   watch: {
-    // 监听tab数据的变化，当点击不同的选项就会渲染不同的数据
+    // 这里是数据的切换导致显示不同额数据
+    // 监听tab数据的变化
+    // 在第一次渲染中或是下拉将数据进行获取到保存下来
     '$store.state.Tab': async function (newval) {
       this.finished = false
       this.loading = true
@@ -112,7 +118,8 @@ export default {
       this.list = []
       this.onLoad()
     },
-
+    // 这里是数据的切换导致显示不同额数据
+    // 监听搜索关键字的变化，
     '$store.state.value': function (newVal) {
       this.finished = false
       this.loading = true
@@ -159,18 +166,20 @@ export default {
     // list的上拉刷新
     onLoad () {
       setTimeout(() => {
-        // 缓存对象中没有存储那么就是需要出现发送请求
+        // 这里是第一次加载数据，或是下拉数据的获取
         this.$store.dispatch('glideEvent').then((value) => {
+          // 如果获取的是一个空数组那么
           if (value.length === 0) {
             this.list = []
             this.CellList = []
             this.finished = true
           }
+
+          // 将发送的请求后获取到的数据通过遍历的方式添加到 this.CellList中
+          // 再通过for循环一次添加到this。list中进行渲染单元格
           value.forEach(element => {
             this.CellList.push(element)
-            // 缓存对象
           })
-          this.obj.push(value)
           for (let i = 0; i < 10; i++) {
             if (this.CellList[this.list.length]) {
               this.list.push(this.CellList[this.list.length])
