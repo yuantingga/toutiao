@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { journalism, DisLike, report } from '@/api/index.js'
+import { DisLike, report } from '@/api/index.js'
 import { Toast } from 'vant'
 import EventBUS from '@/utils/eventBus'
 // eslint-disable-next-line no-unused-vars
@@ -155,70 +155,34 @@ export default {
       this.textId = item.art_id
       this.show = true
     },
-    // 下拉刷新的实现
-    onRefresh () {
-      setTimeout(async () => {
-        const { data: res } = await journalism({ channel_id: this.$store.state.Tab, timestamp: Date.now() + 1 })
-        this.list = res.data.results
-        this.isLoading = false
-      }, 1000)
-    },
+
     // list的上拉刷新
     onLoad () {
       setTimeout(() => {
-        const tab = GetToken('Tab') || 0
-
-        if (GetToken('Tab') in this.cacheObj) {
-          this.CellList = this.cacheObj[tab][this.index]
-
-          for (let i = 0; i < 10; i++) {
-            this.list.push(this.CellList[i])
+        // 缓存对象中没有存储那么就是需要出现发送请求
+        this.$store.dispatch('glideEvent').then((value) => {
+          if (value.length === 0) {
+            this.list = []
+            this.CellList = []
+            this.finished = true
           }
-
+          value.forEach(element => {
+            this.CellList.push(element)
+            // 缓存对象
+          })
+          this.obj.push(value)
+          for (let i = 0; i < 10; i++) {
+            if (this.CellList[this.list.length]) {
+              this.list.push(this.CellList[this.list.length])
+            }
+          }
           // 加载状态结束
           this.loading = false
-
           // 数据全部加载完成
           if (this.list.length >= 40) {
             this.finished = true
-            if (this.index > this.cacheObj.length) {
-              this.index = 0
-            } else {
-              this.index++
-            }
           }
-        } else {
-          this.$store.dispatch('glideEvent').then((value) => {
-            if (value.length === 0) {
-              this.list = []
-              this.CellList = []
-              this.finished = true
-            }
-            console.log(value)
-            value.forEach(element => {
-              this.CellList.push(element)
-            // 缓存对象
-            })
-
-            this.obj.push(value)
-
-            for (let i = 0; i < 10; i++) {
-              if (this.CellList[this.list.length]) {
-                this.list.push(this.CellList[this.list.length])
-              }
-            }
-
-            // 加载状态结束
-            this.loading = false
-
-            // 数据全部加载完成
-            if (this.list.length >= 40) {
-              this.finished = true
-              this.cacheObj[tab] = this.obj
-              SetToken('cacheObj', JSON.stringify(this.cacheObj))
-            }
-          })
-        }
+        })
       }, 1000)
     }
   }

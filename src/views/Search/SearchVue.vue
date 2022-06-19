@@ -14,7 +14,7 @@
       </svg>
     </div>
     <div class="history">
-      <div   v-for="(item, index) in history" :key="index">{{ item }}</div>
+      <div @click="HistoryEvent(item)"  v-for="(item, index) in history" :key="index">{{ item }}</div>
     </div>
   </div>
 </template>
@@ -35,8 +35,8 @@ export default {
     }
   },
   created () {
-    // 获取历史记录
-
+    // 设置Router的值，说明当前是搜索页面的mainvue组件
+    this.$store.commit('SetRouter', '/Search')
   },
   methods: {
     // 清空历史记录
@@ -44,17 +44,33 @@ export default {
       // 发送清空历史记录请求
       this.history = []
       RemoveToken('history')
-      RemoveToken('SearchCacheObj')
+
+      // 点击清空历史记录
     },
+    // 搜索事件
     async SearchKeyword () {
+      // value是搜索关键字
       const value = this.value
-      this.history.push(value)
+      // 进行遍历，判断历史对象中是否又该关键字，又就不能进行添加history这个对象中
+      const flag = this.history.some(ele => value === ele)
+      if (!flag) {
+        this.history.push(value)
+      }
+      // 将this.history添加到本地缓存中，刷新搜索页面不会丢失历史记录
+
       SetToken('history', JSON.stringify(this.history))
-      SetToken('SearchCacheObj', JSON.stringify(this.SearchCacheObj))
+      // 修改历史关键字
       this.$store.commit('SetValue', this.value)
       this.$store.commit('SetRouter', '/Search')
       this.$router.push(`/Search/${this.value}`)
     },
+    // 历史记录的点击
+    HistoryEvent (item) {
+      this.$store.commit('SetValue', item)
+      this.$store.commit('SetRouter', '/Search')
+      this.$router.push(`/Search/${item}`)
+    },
+    // 点击返回就跳转到首页
     back () {
       this.$router.push('/Index/Content')
       this.$store.commit('SetRouter', '/Index/Content')

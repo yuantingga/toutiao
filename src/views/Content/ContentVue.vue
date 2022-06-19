@@ -24,7 +24,9 @@
     <!-- 新闻信息列表组件封装，使用的是$stope中的数据进行发送网络请求进行遍历数据生成新闻列表 -->
     <div class="main">
       <van-pull-refresh v-model="isLoading" success-text="刷新成功" @refresh="onRefresh">
-      <MainVue></MainVue>
+      <keep-alive>
+        <MainVue></MainVue>
+      </keep-alive>
       </van-pull-refresh>
     </div>
 

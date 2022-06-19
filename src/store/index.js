@@ -8,41 +8,48 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    // 首页的选项
     Tab: '',
-    Route: GetToken('Router') || '/Index/Content',
-    glide: '',
+    // 用于区分是首页，搜索页面
+    Route: '/Index/Content',
+    // 搜索页面不断发送请求 的累加
     inn: 1,
+    // 搜索关键字
     value: ''
 
   },
-  getters: {
-  },
   mutations: {
+    // 首页的选中是哪一个
     setTab (state, value) {
       state.Tab = value
-      console.log()
     },
+    // 搜索关键字
     SetValue (state, value) {
       state.value = value
     },
+    // 用于区分是首页还是搜索页面
     SetRouter (state, value) {
       // 初始化数据
-      console.log(value)
       state.Route = value
     }
 
   },
   actions: {
     async glideEvent (context) {
-      console.log(context.state.Route)
+      // 缓存对象用于存储，首页和搜索页面结果镜像判断
+
       if (context.state.Route === '/Index/Content') {
+        // 判断是首页
         const { data: res } = await journalism({ channel_id: context.state.Tab, timestamp: Date.now() })
         return res.data.results
       } else if (context.state.Route === '/Search') {
-        const { data: res } = await SearchResult({ q: context.state.value, page: 1 })
+        // 判断是搜索页面
+        const value = context.state.value
+        const { data: res } = await SearchResult({ q: value, page: 1 })
         return res.data.results
       }
     },
+    // 切换tab
     async cutTab (context) {
       const { data: res } = await journalism({ channel_id: context.state.Tab, timestamp: Date.now() })
       return res.data.results
