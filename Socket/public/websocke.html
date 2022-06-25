@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://lib.baomitu.com/socket.io/4.5.1/socket.io.js"></script>
+  <title>Document</title>
+  <style>
+    .title {
+      font-size: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="title">
+    聊天窗口 <div class="web"></div>
+    <hr />
+  </div>
+  <!-- 添加聊天信息的窗口 -->
+  <div class="add"></div>
+
+  <div class="btn">
+    用户名 <input type="text" class="user">
+    消息 <input type="text" class="text">
+    <button>发送</button>
+  </div>
+</body>
+<script>
+  var ws_text = document.location.protocol == 'https:' ? 'wss' : 'ws';
+  websocket_url = ws_text + '://' + window.location.host
+  console.log(websocket_url);
+  const socket=io(websocket_url) 
+  const button=document.querySelector("button")
+
+  var user=document.querySelector('.user').value
+  var text=document.querySelector('.text').value
+  var app=document.querySelector('.app')
+  button.onclick=function(){
+    //谁来连接socket.io就会给谁绑定一个clos事件
+    socket.emit('cTos', { user, text })
+  }
+  socket.on("sToC",obj=>{
+      // 将所有客户端发送的信息进行获取，就是obj中存储的数据
+      console.log(obj);
+  })
+
+</script>
+
+</html>

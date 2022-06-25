@@ -2,7 +2,7 @@
   <div class="channel">
     <van-nav-bar title="频道管理">
       <template #right>
-        <span class="iconfont icon-close"  @touchstart.prevent="$router.push('/Index/Content')"></span>
+        <span class="iconfont icon-close"  @touchstart.prevent="Back"></span>
       </template>
     </van-nav-bar>
     <div class="text"><span>我的频道</span><i  @click="RemoveChannel">{{channelEdit}}</i><em  @touchstart.prevent="edit" >{{editText}}</em></div>
@@ -28,6 +28,7 @@
 
 import { UserChannels, AllChannels, PutChannel } from '@/api/index'
 import { Toast } from 'vant'
+import { SetToken } from '@/utils/token'
 
 export default {
   data () {
@@ -61,18 +62,27 @@ export default {
     this.List2 = arr2
   },
   methods: {
-    RemoveChannel () {
-      console.log(this.channelEdit)
-      if (this.channelEdit === '点击删除频道') {
-        this.List2.push(this.List.splice(1, 1)[0])
-      } else {
-        this.$router.push('/Index/Content')
-      }
-
+    Back () {
+      this.$router.push('/Index/Content')
+      location.reload()
+    },
+    async RemoveChannel () {
       try {
-        PutChannel(this.List)
+        if (this.channelEdit === '点击删除频道') {
+          this.List2.push(this.List.splice(1, 1)[0])
+        } else {
+          this.$router.push('/Index/Content')
+        }
+        const { data: res } = await PutChannel(this.List)
+        if (res.data.message === '游客不能设置个性化频道') {
+          this.$router.push('/login')
+        }
       } catch (error) {
         Toast.fail('修改失败')
+        if (error.response.data.message === '游客不能设置个性化频道') {
+          this.$router.push('/login')
+          SetToken('login', '/channel')
+        }
       }
     },
     async removeEdit (value) {
@@ -84,9 +94,16 @@ export default {
           }
         })
         console.log(this.List)
-        PutChannel(this.List)
+        const { data: res } = await PutChannel(this.List)
+        if (res.data.message === '游客不能设置个性化频道') {
+          this.$router.push('/login')
+        }
       } catch (error) {
         Toast.fail('修改失败')
+        if (error.response.data.message === '游客不能设置个性化频道') {
+          this.$router.push('/login')
+          SetToken('login', '/channel')
+        }
       }
     },
     edit () {
@@ -99,18 +116,25 @@ export default {
         this.add = false
       }
     },
-    addChannel (value) {
-      if (!this.add) return
-      this.List.push(value)
-      this.List2.forEach((element, index) => {
-        if (element.id === value.id) {
-          this.List2.splice(index, 1)
-        }
-      })
+    async addChannel (value) {
       try {
-        PutChannel(this.List)
+        if (!this.add) return
+        this.List.push(value)
+        this.List2.forEach((element, index) => {
+          if (element.id === value.id) {
+            this.List2.splice(index, 1)
+          }
+        })
+        const { data: res } = await PutChannel(this.List)
+        if (res.data.message === '游客不能设置个性化频道') {
+          this.$router.push('/login')
+        }
       } catch (error) {
         Toast.fail('修改失败')
+        if (error.response.data.message === '游客不能设置个性化频道') {
+          this.$router.push('/login')
+          SetToken('login', '/channel')
+        }
       }
     },
     Zapping (value) {

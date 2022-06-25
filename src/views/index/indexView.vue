@@ -34,12 +34,12 @@ export default {
     // 底部导航的变化
     onChange (value) {
       const token = GetToken('token')
-      console.log(token)
       if (value === '/Index/User') {
         // 路由信息余选项name绑定相同的值，name改变传递的路由hash值也发送改变
         if (!token) return this.$router.push('/login')
       } else {
         this.active = '/Index/Content'
+        this.$store.commit('SetRouter', '/Index/Content')
       }
       this.$router.push(value)
     }

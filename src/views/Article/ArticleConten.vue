@@ -1,0 +1,38 @@
+<template>
+  <div>
+    <slot></slot>
+  </div>
+</template>
+
+<script>
+export default {}
+</script>
+
+<style lang="less" scoped>
+/deep/ .content {
+  font-size: 0.32rem;
+  line-height: 0.64rem;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  word-break: break-all;
+  writing-mode: horizontal-tb;
+  img{
+    width: 100%;
+  }
+  pre{
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .cnblogs_code {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    word-break: break-all;
+    writing-mode: horizontal-tb;
+  }
+  p {
+    word-break: break-all;
+  }
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-nav-bar title="黑马头条-登陆" left-text="返回" left-arrow @click-left="onClickLeft"  />
+    <van-nav-bar title="黑马头条-登陆"   />
     <van-form @submit="onSubmit">
       <van-field v-model="username" required name="mobile" label="手机号" placeholder="手机号"
        :rules="[{ required: true, message: '请填写手机号',pattern :/^1[3456789]\d{9}$/ }]" />
@@ -17,7 +17,7 @@
 <script>
 import { login } from '@/api/index'
 import { Toast } from 'vant'
-import { SetToken } from '@/utils/token.js'
+import { GetToken, SetToken } from '@/utils/token.js'
 import EventBus from '@/utils/eventBus'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -43,8 +43,12 @@ export default {
         // 设置token到本地缓存中
         SetToken('token', res.data.token)
         Toast.success('登陆成功')
-        this.$router.replace('/Index/Content')
-        EventBus.$emit('UserClick', '/Index/Content')
+        if (GetToken('login') === '/channel') {
+          this.$router.replace(GetToken('login'))
+        } else {
+          this.$router.replace('/Index/Content')
+          EventBus.$emit('UserClick', '/Index/Content')
+        }
       } catch (error) {
         Toast.fail('登陆失败')
       }
@@ -52,9 +56,6 @@ export default {
         this.Loading = false
         this.Disabled = false
       }, 1000)
-    },
-    onClickLeft () {
-
     }
   }
 }

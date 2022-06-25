@@ -50,11 +50,13 @@ export default {
     async SearchKeyword () {
       // value是搜索关键字
       const value = this.value
+
       // 进行遍历，判断历史对象中是否又该关键字，又就不能进行添加history这个对象中
       const flag = this.history.some(ele => value === ele)
       if (!flag) {
         this.history.push(value)
       }
+
       // 将this.history添加到本地缓存中，刷新搜索页面不会丢失历史记录
 
       SetToken('history', JSON.stringify(this.history))
@@ -62,6 +64,7 @@ export default {
       this.$store.commit('SetValue', this.value)
       this.$store.commit('SetRouter', '/Search')
       this.$router.push(`/Search/${this.value}`)
+      this.value = ''
     },
     // 历史记录的点击
     HistoryEvent (item) {

@@ -36,7 +36,7 @@
 <script>
 import { journalism, UserChannels } from '@/api/index'
 import { SetToken } from '@/utils/token'
-import MainVue from '@/views/Content/Main/MainVue.vue'
+import MainVue from '@/components/Main/MainVue.vue'
 import EventBUS from '@/utils/eventBus'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names

@@ -2,10 +2,11 @@
   <div>
     <van-list v-model="loading" :finished="finished"  finished-text="没有更多了" @load="onLoad">
       <div v-if="list.length != 0" class="list">
-        <van-cell v-for="(item, index) in list" :key="index" :title="item.title">
+        <van-cell @click="ArticleEvent(item)" v-for="(item, index) in list" :key="index" :title="item.title">
           <!-- 图片只有一张时 -->
           <template #label v-if="item.cover.type === 0">
             <div class="CellLabel0">
+
               {{ item | descriptor }}
             </div>
           </template>
@@ -90,23 +91,12 @@ export default {
       ]
     }
   },
-  filters: {
-    descriptor (value) {
-      function formattingDate (value) {
-        const d = Date.now() / 1000 - new Date(value).getTime() / 1000
-        const dd = d / 60 / 60 / 24 / 365 > 0 ? parseInt(d / 60 / 60 / 24 / 365) + '年前' : parseInt(d / 60 / 60 / 24 / 12) + '月前'
-        return dd
-      }
 
-      return `${value.aut_name} ${value.comm_count} 评论 ${formattingDate(value.pubdate)}`
-    }
-  },
   async created () {
     EventBUS.$on('refresh', (value) => {
       this.list = value
     })
   },
-
   watch: {
     // 这里是数据的切换导致显示不同额数据
     // 监听tab数据的变化
@@ -120,8 +110,11 @@ export default {
           SetToken(`${newval}`, JSON.stringify(value))
         })
       }
-
       // 切换发送请求
+    },
+    '$store.state.Route': async function (newVal) {
+      this.list = []
+      this.onLoad()
     },
     // 这里是数据的切换导致显示不同额数据
     // 监听搜索关键字的变化，
@@ -135,6 +128,13 @@ export default {
 
   },
   methods: {
+    ArticleEvent (item) {
+      console.log(item.art_id)
+      this.$router.push({
+        path: `/article/${item.art_id}`
+      })
+      console.log(1111)
+    },
     PanelCancel () {
       this.show = true
     },
@@ -170,9 +170,9 @@ export default {
 
     // list的上拉刷新
     onLoad () {
+      console.log('加载')
       setTimeout(() => {
         // 这里是第一次加载数据，或是下拉数据的获取
-        console.log('加载')
         this.$store.dispatch('glideEvent').then((value) => {
           // 如果获取的是一个空数组那么
           if (value.length === 0) {
