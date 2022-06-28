@@ -1,4 +1,5 @@
 <template>
+<!-- 评论消息的组件 -->
     <div class="comment">
         <div class="header">
           <div class="title">
@@ -16,13 +17,12 @@
           </div>
         </div>
         <div class="content">
+        <!-- 评论的文本 -->
           <span>{{list.content}}</span>
+          <!-- 评论的时间 -->
           <span>{{list.pubdate}}</span>
         </div>
-        <!-- <div class="reply">
-          <van-icon name="chat-o"  />
-          <van-icon name="good-job-o" />
-        </div> -->
+
       </div>
 </template>
 
@@ -31,27 +31,24 @@
 import { addLove, removeLove, SetCommentOf } from '@/api/index.js'
 export default {
   props: ['CommentInfo'],
+  // 传递过来的数据进行遍历创建每一个评论信息
   data () {
     return {
+      // 评论最右边的小爱心就点击
       love: this.CommentInfo.is_liking,
-      list: this.CommentInfo,
-      add: ''
+      // 遍历对象，当添加评论就添加到这个list中
+      list: this.CommentInfo
     }
-  },
-  created () {
-    console.log(this.love)
   },
 
   methods: {
-    async CutLove () {
+    // 小爱心的点击于取消
+    CutLove () {
       this.love = !this.love
       if (this.love) {
-        const { data: res } = await addLove(this.list.com_id)
-        console.log(res)
+        addLove(this.list.com_id).catch()
       } else {
-        //
-        const { data: res } = await removeLove(this.list.com_id)
-        console.log(res)
+        removeLove(this.list.com_id).catch()
       }
     }
   }
@@ -96,6 +93,9 @@ export default {
           color: grey;
         }
       }
+    }
+    /deep/ .van-image__loading-icon{
+      font-size: 16px;
     }
     .reply{
         padding-left: 46px;

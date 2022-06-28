@@ -13,7 +13,7 @@ export default {
 
   },
   activated () {
-
+    this.$store.commit('SetRouter', '/User/History')
   },
   components: {
     MainVue

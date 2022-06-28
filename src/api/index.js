@@ -27,6 +27,7 @@ function GetTabs () {
     console.log(error)
   }
 }
+// 首页推荐，新闻界面的数据
 function journalism (obj) {
   try {
     return axioss({
@@ -117,6 +118,8 @@ function PutChannel (obj) {
     console.log(error)
   }
 }
+
+// 搜索页面进行发送请求
 function SearchResult (value) {
   try {
     return axioss({
@@ -129,6 +132,7 @@ function SearchResult (value) {
     console.log(error)
   }
 }
+// user进行获取，用于设置个人用户界面的信息，关注人数，动态人数，头像等信息
 function User () {
   try {
     return axioss({
@@ -141,6 +145,7 @@ function User () {
     console.log(error)
   }
 }
+// 编辑用户资料界面用户数据
 function UserData () {
   try {
     return axioss({
@@ -153,6 +158,7 @@ function UserData () {
     console.log(error)
   }
 }
+// 个人用户界面点击确认就行发送请求修改name，以及生日面板中就行修改日期
 function UserAmend (obj) {
   try {
     return axioss({
@@ -169,6 +175,7 @@ function UserAmend (obj) {
     console.log(error)
   }
 }
+// 个人用户界面 上传头像修改
 function Setphoto (obj) {
   try {
     return axioss({
@@ -183,7 +190,7 @@ function Setphoto (obj) {
     console.log(error)
   }
 }
-
+// 历史记录的新闻请求
 function histories () {
   try {
     return axioss({

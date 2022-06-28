@@ -1,7 +1,9 @@
 <template>
   <div>
-    <van-list v-model="loading" :finished="finished"  finished-text="没有更多了" @load="onLoad">
+    <van-list v-model="loading" :finished="finished" offset="0"  finished-text="没有更多了" @load="onLoad">
       <div v-if="list.length != 0" class="list">
+      <!--ArticleEvent点击单元格实现跳转到文章详情页面  -->
+      <!-- 通过v-for进行遍历 -->
         <van-cell @click="ArticleEvent(item)" v-for="(item, index) in list" :key="index" :title="item.title">
           <!-- 图片只有一张时 -->
           <template #label v-if="item.cover.type === 0">
@@ -35,6 +37,7 @@
 
             {{ item | descriptor }}
           </template>
+          <!-- 小叉号 -->
           <template #extra>
             <div class="clone" @touchstart.prevent="Clone(item)">x</div>
           </template>
@@ -47,6 +50,7 @@
 </template>
 
 <script>
+// DisLike 点击叉号的处理，进行设置不感兴趣新闻/举报新闻
 import { DisLike, report } from '@/api/index.js'
 import { Toast } from 'vant'
 import EventBUS from '@/utils/eventBus'
@@ -56,17 +60,15 @@ import { GetToken, SetToken } from '@/utils/token'
 export default {
   data () {
     return {
-      // 获取数据对象
-      CellList: [],
+      //
+      cacheObj: {},
       // 加载渲染表格的数据对象
       list: [],
-      // 缓存对象
-      cacheObj: {},
-      index: 0,
       // 加载状态结束
       loading: false,
       // 数据还没有加载完成
       finished: false,
+
       // 获取contentVue组件中tabs选项卡选中的选项
       stope: this.$store.state.Tab,
       // 面板的显示于隐藏
@@ -93,6 +95,7 @@ export default {
   },
 
   async created () {
+    // 获取到下拉刷新的新数据进行渲染list中的数据，进行显示新数据
     EventBUS.$on('refresh', (value) => {
       this.list = value
     })
@@ -108,55 +111,65 @@ export default {
         this.$store.dispatch('glideEvent').then((value) => {
           this.list = value
           SetToken(`${newval}`, JSON.stringify(value))
+        }).catch(value => {
+          console.log(value)
         })
       }
       // 切换发送请求
     },
+
+    // 用于区分首页，搜索页面，历史界面
     '$store.state.Route': async function (newVal) {
+      // 当进行切换到不同的页面那么就将list中的数据进行情况，并进行进行加载数据
       this.list = []
       this.onLoad()
     },
-    // 这里是数据的切换导致显示不同额数据
-    // 监听搜索关键字的变化，
+
+    // 监听搜索关键字的变化，而导致组件渲染不同的数据
     '$store.state.value': function (newVal) {
-      this.finished = false
-      this.loading = true
-      this.CellList = []
-      this.list = []
-      this.onLoad()
+      this.$store.dispatch('glideEvent').then((value) => {
+        this.list = value
+      })
     }
 
   },
+  // Deactivated () {
+  //   // 当main组件被缓存时将list中的数据进行清空
+  //   this.list = []
+  // },
   methods: {
+    // 跳转到文章详情页面
     ArticleEvent (item) {
       console.log(item.art_id)
       this.$router.push({
         path: `/article/${item.art_id}`
       })
+      SetToken('login', JSON.stringify(`/article/${item.art_id}`))
       console.log(1111)
     },
+    // 第二个面板点击返回显示第一个面板
     PanelCancel () {
       this.show = true
     },
+    // 举报面板进行发送请求进行举报
     async PanelSelect2 (value) {
-      try {
-        const { data: res } = await report({ target: this.textId, type: value.name })
-        if (res.message === 'OK') return Toast('举报成功')
-      } catch (error) {
+      report({ target: this.textId, type: value.name }).then(value => {
+        Toast('举报成功')
+      }).catch(value => {
         Toast('举报失败')
-      }
+      })
     },
+    // 第一个面板，点击的是不感兴趣进行发送请求
     async PanelSelect (value) {
       console.log(value)
       if (value.name === '不感兴趣') {
-        console.log('发送请求')
-        try {
-          const { data: res } = await DisLike({ target: this.textId })
-          if (res.message === 'OK') return Toast('反馈成功')
-        } catch (error) {
+        DisLike({ target: this.textId }).then(value => {
+          Toast('反馈成功')
+        }).catch(value => {
           Toast('反馈失败')
-        }
+        })
       } else {
+        // 显示举报的面板
         this.show2 = true
       }
     },
@@ -174,22 +187,32 @@ export default {
       setTimeout(() => {
         // 这里是第一次加载数据，或是下拉数据的获取
         this.$store.dispatch('glideEvent').then((value) => {
+          console.log(value)
           // 如果获取的是一个空数组那么
           if (value.length === 0) {
             this.finished = true
           }
           value.forEach(element => {
-            this.CellList.push(element)
+            // this.CellList.push(element)
+            // console.log(element)
+            this.list.push(element)
           })
 
-          for (let i = 0; i < 10; i++) {
-            if (this.CellList[this.list.length]) {
-              this.list.push(this.CellList[this.list.length])
-            }
-          }
+          // for (let i = 0; i < 10; i++) {
+          //   if (this.CellList[this.list.length]) {
+          //     this.list.push(this.CellList[this.list.length])
+          //   }
+          // }
           // 加载状态结束
           this.loading = false
           // 数据全部加载完成
+          // if (this.list.length >= 40) {
+          //   this.finished = true
+          // }
+        }).catch((value) => {
+          console.log(value)
+          this.list = []
+          this.finished = true
         })
       }, 1000)
     }

@@ -17,8 +17,8 @@
 <script>
 import { login } from '@/api/index'
 import { Toast } from 'vant'
-import { GetToken, SetToken } from '@/utils/token.js'
-import EventBus from '@/utils/eventBus'
+import { SetToken } from '@/utils/token.js'
+// import EventBus from '@/utils/eventBus'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Login',
@@ -36,22 +36,17 @@ export default {
       // 按钮的禁用余加载效果
       this.Loading = true
       this.Disabled = true
-      try {
-        // 发送登陆请求
-        // eslint-disable-next-line no-unused-vars
-        const { data: res, status } = await login(values)
-        // 设置token到本地缓存中
-        SetToken('token', res.data.token)
+      login(values).then(value => {
+        SetToken('token', value.data.token)
+        SetToken('login', '/Index/User')
         Toast.success('登陆成功')
-        if (GetToken('login') === '/channel') {
-          this.$router.replace(GetToken('login'))
-        } else {
-          this.$router.replace('/Index/Content')
-          EventBus.$emit('UserClick', '/Index/Content')
-        }
-      } catch (error) {
+        // 跳转到个人用户界面
+        this.$router.push('/Index/User')
+      }).catch(value => {
+        console.log(value)
         Toast.fail('登陆失败')
-      }
+      })
+      // 设置token到本地缓存中
       setTimeout(() => {
         this.Loading = false
         this.Disabled = false

@@ -36,7 +36,7 @@
 
 <script>
 
-import { GetToken, SetToken, RemoveToken } from '@/utils/token'
+import { SetToken, RemoveToken } from '@/utils/token'
 import { Dialog } from 'vant'
 
 export default {
@@ -47,26 +47,21 @@ export default {
     }
   },
   async created () {
-    // 获取token当他的值不存在那么就跳转到登陆界面
-    if (!GetToken('token')) {
-      this.$router.push('/login')
-    }
+    // // 获取token当他的值不存在那么就跳转到登陆界面
+    // if (!GetToken('token')) {
+    //   this.$router.push('/login')
+    // }
 
     this.$store.dispatch('SetUser').then((value) => {
+      console.log(value)
       this.user = value.data
+    }).catch((value) => {
+      console.log(value)
     })
   },
-  activated () {
-    this.$store.dispatch('SetUser').then((value) => {
-      this.user = value.data
-    })
-  },
-  watch: {
-    '$store.state.User': function () {
 
-    }
-  },
   methods: {
+    // 退出
     quit () {
       Dialog.confirm({
         title: '确认退出?',
@@ -82,19 +77,18 @@ export default {
           // on cancel
         })
     },
+    // 编辑
     Edit (event) {
       this.$router.push('/User/Edit')
       SetToken('title', event.target.innerText)
     },
+    // 历史
     SetHistory (event) {
       this.$router.push('/User/History')
       this.$store.commit('SetRouter', '/User/History')
       SetToken('title', event.target.innerText)
     },
-    FansEvent () {
-      this.$router.push('/User/Fans')
-      SetToken('title', event.target.innerText)
-    },
+
     SmallFour (event) {
       this.$router.push('/User/SmallFour')
       SetToken('title', event.target.innerText)

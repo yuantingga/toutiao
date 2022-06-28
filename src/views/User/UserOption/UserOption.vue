@@ -1,10 +1,7 @@
 <template>
   <div class="UserOption">
     <van-nav-bar :title="title"  left-arrow   @click-left="onClickLeft" />
-
-    <keep-alive>
-      <component :is="$route.params.id"></component>
-    </keep-alive>
+    <component :is="$route.params.id"></component>
   </div>
 </template>
 
@@ -21,18 +18,14 @@ export default {
       title: ''
     }
   },
+  // title用于显示导航条底部的标题内容的文字
   activated () {
     this.title = GetToken('title')
-    this.$store.commit('SetRouter', '/User/History')
   },
   methods: {
+    // 点击返回到新闻界面
     async onClickLeft () {
       this.$router.push('/Index/User')
-      // 重新发送请求渲染页面
-      if (this.$route.path === '/User/Edit') {
-        //
-
-      }
     }
   },
   components: {

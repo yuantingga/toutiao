@@ -1,7 +1,7 @@
 <template>
   <div class="shi">
     <div ref="dialog" class="dialog">
-      <div class="robot" >
+      <div class="robot">
         <div class="header"></div>
         <div class="content">我是小思</div>
       </div>
@@ -28,20 +28,22 @@ export default {
     return {
       value: '',
       header: '',
+      // 用户输入的信息
       user: ['我是用户'],
       socket: ''
     }
   },
-  created () {
+  async created () {
     this.$store.dispatch('SetUser').then((value) => {
+      // 通过store进行设置获取用户信息,进行发送请求获取用户信息
+      // 使用this.header属性进行存储图片信息
       this.header = value.data.photo
-
+      // 获取到页面上所有的header组件进行设置信息头像
       const headerDom = this.$refs.header
+      // 通过遍历进行获取到页面每一个header组件进行设置北京图片
       headerDom.forEach((element) => {
         element.style.background = `url(${value.data.photo})`
       })
-
-      // headerDom.
     })
 
     // 发送websocket请求，进行获取到小机器人的数据
@@ -58,28 +60,32 @@ export default {
       },
       transports: ['websocket']
     })
+    // 触发connect表示服务器与客户端连接成功，自定义事件
     this.socket.on('connect', (socket) => {
       console.log('连接成功')
     })
-    // 响应回来的数据
+    // 响应回来的数据，使用的也是自定义事件
     this.socket.on('message', (obj) => {
       const str = `<div class="robot" >
         <div class="header"></div>
         <div class="content">${obj.msg}</div>
       </div>`
+      // 进行添加字符串
       this.$refs.dialog.insertAdjacentHTML('beforeend', str)
     })
   },
   methods: {
+    // 用户输入信息
     SubmitEvent () {
       const data = this.value
       this.value = ''
+      // 向服务器进行发送数据
       this.socket.emit('message', { msg: data })
+      // 添加用户自己输入的内容的信息
       this.user.push(data)
-      this.socket.on()
+      // 用户编辑输入的信息，进行获取到，修改他的头像的图片
       this.$nextTick(function () {
         const headerDom = this.$refs.header
-        console.log(headerDom)
         headerDom.forEach((element) => {
           element.style.background = `url(${this.header})`
         })
@@ -104,7 +110,7 @@ export default {
     width: 100%;
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 10px;
+    margin: 10px 0;
 
     .header {
       width: 50px;

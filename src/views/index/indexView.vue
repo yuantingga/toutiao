@@ -14,7 +14,8 @@
 
 <script>
 import EventBus from '@/utils/eventBus'
-import { GetToken } from '@/utils/token.js'
+import { GetToken, SetToken } from '@/utils/token'
+// import { GetToken } from '@/utils/token.js'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Index',
@@ -27,21 +28,17 @@ export default {
     EventBus.$on('UserClick', value => {
       this.active = value
     })
+    SetToken('err', false)
   },
 
   methods: {
     // 点击首页和我的进行切换路由，双向数据绑定active中的值
     // 底部导航的变化
     onChange (value) {
-      const token = GetToken('token')
-      if (value === '/Index/User') {
-        // 路由信息余选项name绑定相同的值，name改变传递的路由hash值也发送改变
-        if (!token) return this.$router.push('/login')
-      } else {
-        this.active = '/Index/Content'
-        this.$store.commit('SetRouter', '/Index/Content')
+      if (GetToken('token')) {
+        this.active = value
+        this.$router.push(value)
       }
-      this.$router.push(value)
     }
   }
 }

@@ -1,29 +1,52 @@
 <template>
   <div class="channel">
-    <van-nav-bar title="频道管理">
-      <template #right>
-        <span class="iconfont icon-close"  @touchstart.prevent="Back"></span>
-      </template>
-    </van-nav-bar>
-    <div class="text"><span>我的频道</span><i  @click="RemoveChannel">{{channelEdit}}</i><em  @touchstart.prevent="edit" >{{editText}}</em></div>
-    <div class="ChannelSeparation">
-      <div v-for="(item,index) in List" :key="index"  @touchstart.prevent="Zapping(item)">{{ item.name }}
+      <van-nav-bar title="频道管理">
+        <template #right>
+          <span class="iconfont icon-close" @touchstart.prevent="Back"></span>
+        </template>
+      </van-nav-bar>
+     <van-loading v-show="!show2" size="24px" color="#1989fa" style="margin-top:10px">加载中...</van-loading>
+    <div v-show="show2">
 
-       <span v-show="show" v-if="item.id !=0" class="iconfont icon-close"  @touchstart.prevent="removeEdit(item)"></span>
+      <div class="text">
+        <span>我的频道</span>
+        <!-- channelEdit:点击进入频道|点击删除频道的切换 -->
+        <i @click="RemoveChannel">{{ channelEdit }}</i>
+        <!-- editText编辑|完成之间的切换 -->
+        <em @touchstart.prevent="edit">{{ editText }}</em>
       </div>
 
-    </div>
-    <div class="text"><span>点击添加更多频道</span></div>
-    <div class="ChannelSeparation">
-     <div  v-for="item in List2" :key="item.id" @touchstart.prevent="addChannel(item)">
-        {{item.name}}
-     </div>
+      <!-- 用户的频道列表
+        List存储的是用户的频道列表
+        Zapping点击用户频道进行切换到首页的tab对应的频道上进行显示新闻信息列表
+     -->
+      <div class="ChannelSeparation">
+        <div v-for="(item, index) in List" :key="index" @touchstart.prevent="Zapping(item)">
+          {{ item.name }}
+          <!-- 小叉号图标的显示与隐藏，点击编辑显示，点击完成隐藏
+        removeEdit在用户频道中进行删除该频道
+        在未添加的频道中进行添加该点击的频道
+         -->
+          <span v-show="show" v-if="item.id != 0" class="iconfont icon-close" @touchstart.prevent="removeEdit(item)"></span>
+        </div>
+      </div>
+      <!-- 下方未添加的频道列表 -->
+      <div class="text"><span>点击添加更多频道</span></div>
+      <div class="ChannelSeparation">
+        <!--
+
+      存储的是未添加的用户频道
+      addChannel点击继续添加到用户频道中在原本频道中进行删除
+     -->
+        <div v-for="item in List2" :key="item.id" @touchstart.prevent="addChannel(item)">
+          {{ item.name }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-
 // eslint-disable-next-line no-unused-vars
 
 import { UserChannels, AllChannels, PutChannel } from '@/api/index'
@@ -33,50 +56,72 @@ import { SetToken } from '@/utils/token'
 export default {
   data () {
     return {
+      // 小叉号的点击显示与隐藏
       show: false,
+      // 编辑于完成的切换
       editText: '编辑',
+      // add 节流阀未true才能点击下方未添加频道的频道内，未true可以操作
       add: false,
+      // 点击进入频道和点击删除频道的切换
+      channelEdit: '点击进入频道',
+
+      // 用户的频道列表
       List: '',
+      // 未添加的频道列表
       List2: '',
-      channelEdit: '点击进入频道'
+      show2: false
     }
   },
   async created () {
-    const { data: res } = await UserChannels()
+    // 用户的频道列表
+    try {
+      const res = await UserChannels()
+      // 所有的频道列表
+      const res2 = await AllChannels()
+      this.show2 = true
 
-    const { data: res2 } = await AllChannels()
-
-    this.List = res.data.channels
-    const arr = res.data.channels
-    const arr2 = res2.data.channels
-    arr.forEach(ele => {
-      arr2.forEach((element, index, shuzu) => {
+      // 存储用户的频道列表
+      this.List = res.data.channels
+      // 使用遍历进行判断所有频道列表中的频道是否有于用户的频道列表中相同的内容
+      // 通过遍历 arr 存储的是用户的信息列表 进行遍历他，
+      // 用户频道遍历一次就需要和所有频道列表都比较一次，发现相同的那么就使用splice方法进行删除
+      const arr = res.data.channels
+      const arr2 = res2.data.channels
+      arr.forEach((ele) => {
+        arr2.forEach((element, index, shuzu) => {
         // 外面的这个要和里层循环进行比较一旦出现相同那么就需要删除删除arr2中的元素
         //  arr 中的一个元素和arr2中所有的进行比较
-        if (ele.id === element.id) {
-          shuzu.splice(index, 1)
-        }
+          if (ele.id === element.id) {
+            shuzu.splice(index, 1)
+          }
+        })
       })
-    })
+      // 操作完成的arr2就是list2所有频道列表的内容
 
-    this.List2 = arr2
+      this.List2 = arr2
+    } catch (error) {
+      console.log(error)
+    }
   },
   methods: {
     Back () {
       this.$router.push('/Index/Content')
       location.reload()
     },
+    // 点击删除频道的点击事件
     async RemoveChannel () {
       try {
         if (this.channelEdit === '点击删除频道') {
           this.List2.push(this.List.splice(1, 1)[0])
         } else {
+          // 如果点击的是点击进入频道那么就直接条到首页面
           this.$router.push('/Index/Content')
         }
-        const { data: res } = await PutChannel(this.List)
-        if (res.data.message === '游客不能设置个性化频道') {
-          this.$router.push('/login')
-        }
+        PutChannel(this.List).then(value => {
+          if (value.data.message === '游客不能设置个性化频道') {
+            this.$router.push('/login')
+          }
+        })
       } catch (error) {
         Toast.fail('修改失败')
         if (error.response.data.message === '游客不能设置个性化频道') {
@@ -85,6 +130,7 @@ export default {
         }
       }
     },
+    // 进行删除用户频道中的频道并添加到所有频道列表中
     async removeEdit (value) {
       try {
         this.List2.push(value)
@@ -93,11 +139,12 @@ export default {
             this.List.splice(index, 1)
           }
         })
-        console.log(this.List)
-        const { data: res } = await PutChannel(this.List)
-        if (res.data.message === '游客不能设置个性化频道') {
-          this.$router.push('/login')
-        }
+
+        PutChannel(this.List).then(value => {
+          if (value.data.message === '游客不能设置个性化频道') {
+            this.$router.push('/login')
+          }
+        })
       } catch (error) {
         Toast.fail('修改失败')
         if (error.response.data.message === '游客不能设置个性化频道') {
@@ -118,29 +165,40 @@ export default {
     },
     async addChannel (value) {
       try {
+        // 为false进行返回
         if (!this.add) return
+        // 为true显示小图标点击下方为添加的频道进行添加，在未添加的频道列表中进行删除该频道
         this.List.push(value)
         this.List2.forEach((element, index) => {
           if (element.id === value.id) {
             this.List2.splice(index, 1)
           }
         })
-        const { data: res } = await PutChannel(this.List)
-        if (res.data.message === '游客不能设置个性化频道') {
-          this.$router.push('/login')
-        }
+        //
+        // eslint-disable-next-line no-unused-vars
+        PutChannel(this.List)
       } catch (error) {
+        // 如果不是游客问题一律弹窗修改失败
         Toast.fail('修改失败')
+        // 进行修改用户的频道，如果返回的是游客，那么就会跳转到用户界面
         if (error.response.data.message === '游客不能设置个性化频道') {
           this.$router.push('/login')
+          // 并将
           SetToken('login', '/channel')
         }
       }
     },
+
     Zapping (value) {
+      // add为true 进行返回不能不能进行 ，显示小叉号时点击不能进行跳转
       if (this.add) return
       this.$router.push('/Index/Content')
       this.$store.commit('setTab', value.id)
+      /*
+      setTab (state, value) {
+        state.Tab = value
+      },
+      */
     }
   }
 }
@@ -148,6 +206,9 @@ export default {
 
 <style lang="less" scoped>
 .channel {
+  .van-loading{
+    text-align: center;
+  }
   .text {
     margin: 10px 5px;
     span {
@@ -158,17 +219,17 @@ export default {
       font-size: 14px;
       color: rgb(207, 207, 207);
     }
-    em{
+    em {
       float: right;
-       font-size: 18px;
-       margin-right: 5px;
+      font-size: 18px;
+      margin-right: 5px;
     }
   }
   .ChannelSeparation {
     display: flex;
     flex-wrap: wrap;
 
-     div{
+    div {
       width: 23%;
       height: 50px;
       background: #fafafa;
@@ -177,14 +238,12 @@ export default {
       justify-content: center;
       align-items: center;
       position: relative;
-      .icon-close{
-      position: absolute;
-      right: 0;
-      top: 0;
-       color: rgb(207, 207, 207);
-
-    }
-
+      .icon-close {
+        position: absolute;
+        right: 0;
+        top: 0;
+        color: rgb(207, 207, 207);
+      }
     }
   }
 }

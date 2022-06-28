@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import { journalism, SearchResult, histories, User } from '@/api/index.js'
 // eslint-disable-next-line no-unused-vars
 import { GetToken, SetToken } from '@/utils/token'
-
+import { Toast } from 'vant'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -51,47 +51,61 @@ export default new Vuex.Store({
     async SetRobot () {
       // const {data:res} =await
     },
-    async SetUser (context) {
-      const { data: res } = await User()
-      context.state.User = res.data.results
+    SetUser (context) {
+      // 发送user用户资料请求，并将获取到的信息添加到user中
+      const res = User().then(value => {
+        context.state.User = value.data.results
+        return value
+      }).catch(value => {
+        console.log(value)
+      })
       return res
     },
+
+    // mainvue组件进行区分是首页还是搜索页面，还是历史界面进行获取不同的数据绘制不同的页面
     async glideEvent (context) {
       // 缓存对象用于存储，首页和搜索页面结果镜像判断
 
       if (context.state.Route === '/Index/Content') {
         // 判断是首页
-        try {
-          const { data: res } = await journalism({ channel_id: context.state.Tab, timestamp: Date.now() })
-          return res.data.results
-        } catch (error) {
 
-        }
+        const res = journalism({ channel_id: context.state.Tab, timestamp: Date.now() }).then(value => {
+          return value.data.results
+        }).catch()
+        return res
       } else if (context.state.Route === '/Search') {
         // 判断是搜索页面
         try {
           const value = context.state.value
-          const { data: res } = await SearchResult({ q: value, page: context.state.inn })
-          context.state.inn++
-          return res.data.results
+          const res = SearchResult({ q: value, page: context.state.inn }).then(value => {
+            context.state.inn++
+            return value.data.results
+          }).catch()
+
+          return res
         } catch (error) {
-          console.log(error)
+          Toast.fail('加载失败')
+          return Error
         }
       } else if (context.state.Route === '/User/History') {
         try {
-          const { data: res } = await histories({ page: context.state.inn, per_page: 20 })
-
-          return res.data.results
+          const res = histories({ page: context.state.inn, per_page: 20 }).then(value => {
+            return value.data.results
+          })
+          return res
         } catch (error) {
-
+          Toast.fail('加载失败')
+          return Error
         }
       }
     },
     // 切换tab
     async cutTab (context) {
       try {
-        const { data: res } = await journalism({ channel_id: context.state.Tab, timestamp: Date.now() })
-        return res.data.results
+        const res = journalism({ channel_id: context.state.Tab, timestamp: Date.now() }).then(value => {
+          return value.data.results
+        }).catch()
+        return res
       } catch (error) {
         console.log(error)
       }
