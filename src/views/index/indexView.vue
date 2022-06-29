@@ -14,7 +14,7 @@
 
 <script>
 import EventBus from '@/utils/eventBus'
-import { GetToken, SetToken } from '@/utils/token'
+import { GetToken } from '@/utils/token'
 // import { GetToken } from '@/utils/token.js'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -28,7 +28,6 @@ export default {
     EventBus.$on('UserClick', value => {
       this.active = value
     })
-    SetToken('err', false)
   },
 
   methods: {

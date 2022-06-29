@@ -17,6 +17,7 @@ Vue.filter('descriptor', function (value) {
 
   return `${value.aut_name} ${value.comm_count} 评论 ${formattingDate(value.pubdate)}`
 })
+
 new Vue({
   router,
   store,

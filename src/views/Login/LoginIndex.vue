@@ -37,7 +37,9 @@ export default {
       this.Loading = true
       this.Disabled = true
       login(values).then(value => {
+        console.log(value)
         SetToken('token', value.data.token)
+        SetToken('refresh_token', value.data.refresh_token)
         SetToken('login', '/Index/User')
         Toast.success('登陆成功')
         // 跳转到个人用户界面
@@ -46,6 +48,7 @@ export default {
         console.log(value)
         Toast.fail('登陆失败')
       })
+      SetToken('err', 'true')
       // 设置token到本地缓存中
       setTimeout(() => {
         this.Loading = false

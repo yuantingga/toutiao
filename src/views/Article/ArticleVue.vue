@@ -127,8 +127,10 @@ export default {
   created () {
     // 获取评论信息
     GetComment(this.$route.params.id).then(value => {
+      console.log(value)
       this.text = value.data.results
     })
+    console.log('文章组件激活')
   },
   // 自动获取焦点指令
   directives: {
@@ -152,6 +154,8 @@ export default {
   async activated () {
     this.html = ''
     GetArticle(this.$route.params.id).then(value => {
+      console.log('激活')
+      console.log(value)
       // 主体文本内容
       this.html = value.data.content
       // 关注的状态

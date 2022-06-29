@@ -1,11 +1,9 @@
 // eslint-disable-next-line no-unused-vars
-import { GetToken } from '@/utils/token'
+import { login, Token } from '@/api'
+import { GetToken, SetToken } from '@/utils/token'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-// import { GetToken } from '@/utils/token'
-// // 首页新闻加载
-// import Index from '@/views/index/indexView.vue'
 const Index = () => import(/* webpackChunkName: "Index" */ '@/views/index/indexView.vue')
 
 // // 登陆首页加载
@@ -65,8 +63,20 @@ const routes = [
     ]
   },
   { path: '/User/:id', component: UserOption },
-  { path: '/login', component: Login },
-  { path: '/channel', component: channel },
+  {
+    path: '/login',
+    component: Login,
+
+    beforeEnter: (to, from, next) => {
+      if (!GetToken('token')) {
+        next()
+      }
+    }
+  },
+  {
+    path: '/channel',
+    component: channel
+  },
   {
     path: '/Search',
     component: Search
@@ -81,14 +91,12 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-router.beforeEach((to, from, next) => {
-  // 请求拦截器实现token没有或是token 401跳转到login页面
-  // 我们只需要解决tokne存在且要去往login页面的问题
+router.beforeEach(async (to, from, next) => {
   if (to.path !== '/login' && !GetToken('token')) {
-    // token为空，
+    // 这里是token被清空
     next('/login')
-  } else if (to.path === '/login' && GetToken('token') && GetToken('err') === 'false') {
-    // 此时是不能跳转过去
+  } else if (to.path === '/login' && GetToken('token') && GetToken('err') === 'true') {
+    // token是正确的，但是不能跳转到login页面
     next(from.path)
   } else {
     next()

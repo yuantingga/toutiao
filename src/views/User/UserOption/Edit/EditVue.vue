@@ -114,7 +114,10 @@ export default {
       this.birthday = value.data.birthday
       this.name = value.data.name
     }).catch(value => {
-      console.log(value)
+      //
+      console.log('cw')
+
+      // console.log(value)
     })
   }
 }

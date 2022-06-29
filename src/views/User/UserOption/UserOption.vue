@@ -28,6 +28,7 @@ export default {
       this.$router.push('/Index/User')
     }
   },
+
   components: {
     Edit,
     History,

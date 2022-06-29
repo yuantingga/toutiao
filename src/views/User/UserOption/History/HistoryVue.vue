@@ -1,6 +1,8 @@
 <template>
   <div class="history">
+    <keep-alive>
     <MainVue></MainVue>
+    </keep-alive>
   </div>
 
 </template>

@@ -8,6 +8,18 @@ import { GetToken } from '@/utils/token.js'
 function AllChannel () {
   return axioss({ url1: '/channels' })
 }
+function Token () {
+  return axioss({
+    url1: '/authorizations',
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${GetToken('refresh_token')}`
+    },
+    data: {
+      refresh_token: GetToken('refresh_token')
+    }
+  })
+}
 function login ({ mobile, code }) {
   try {
     return axioss({ url1: '/authorizations', method: 'post', data: { mobile, code } })
@@ -20,7 +32,7 @@ function GetTabs () {
     return axioss({
       url1: '/user/channels',
       headers: {
-        Authorization: `Bearer${GetToken('token')}`
+        Authorization: `Bearer ${GetToken('token')}`
       }
     })
   } catch (error) {
@@ -336,5 +348,6 @@ export {
   UserChannels, AllChannels, PutChannel, SearchResult,
   User, UserData, Setphoto, UserAmend, histories, roborApi,
   GetArticle, GetComment, SendComments, attention, NotAttention,
-  addLove, removeLove, collects, NotCollects, SetLike, CancelLike
+  addLove, removeLove, collects, NotCollects, SetLike, CancelLike,
+  Token
 }

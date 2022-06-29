@@ -1,7 +1,9 @@
 <template>
   <div class="SearchResult">
     <van-nav-bar title="搜索结果" fixed  left-arrow @click-left="Back"  />
-     <MainVue ></MainVue>
+    <keep-alive>
+    <MainVue ></MainVue>
+    </keep-alive>
   </div>
 </template>
 
