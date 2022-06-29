@@ -14,7 +14,7 @@ axios.interceptors.response.use(function (config) {
     // 获取新的token
     const { data: res } = await Token()
     SetToken('token', res.token)
-    location.reload()
+    axios(err.config)
     SetToken('err', 'true')
   }
 })
