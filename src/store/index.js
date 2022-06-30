@@ -17,26 +17,11 @@ export default new Vuex.Store({
     inn: 1,
     // 搜索关键字
     value: '',
-    User: '',
-    dialogUser: ['我是编程小王子'],
-    robot: ['你好，我是小思'],
-    Discuss: ''
-
+    // 个人用户界面请求数据存储
+    User: ''
   },
   mutations: {
-    addDiscuss (state, value) {
-      state.Discuss = value
-    },
-    setDialogUser (state, value) {
-      state.dialogUser.push(value)
-    },
-    setRobot (state, value) {
-      state.robot.push(value)
-    },
-    // 首页的选中是哪一个
-    setTab (state, value) {
-      state.Tab = value
-    },
+
     // 搜索关键字
     SetValue (state, value) {
       state.value = value
@@ -48,9 +33,7 @@ export default new Vuex.Store({
 
   },
   actions: {
-    async SetRobot () {
-      // const {data:res} =await
-    },
+    //  发送个人用户页面请求
     SetUser (context) {
       // 发送user用户资料请求，并将获取到的信息添加到user中
       const res = User().then(value => {
@@ -88,6 +71,7 @@ export default new Vuex.Store({
           return Error
         }
       } else if (context.state.Route === '/User/History') {
+        // 历史记录页面
         try {
           const res = histories({ page: context.state.inn, per_page: 20 }).then(value => {
             return value.data.results
@@ -110,7 +94,5 @@ export default new Vuex.Store({
         console.log(error)
       }
     }
-  },
-  modules: {
   }
 })

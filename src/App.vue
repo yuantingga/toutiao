@@ -2,18 +2,24 @@
   <div class="app">
     <div class="indexx">
     <router-link to="Index"></router-link>
+    <keep-alive>
     <router-view></router-view>
+    </keep-alive>
     </div>
   </div>
 </template>
 
 <script>
+import { Token } from '@/api'
+import { GetToken, RemoveToken, SetToken } from '@/utils/token'
+import axios from '@/utils/require.js'
 export default {
   data () {
     return {
 
     }
   }
+
 }
 </script>
 <style lang="less" scoped>
