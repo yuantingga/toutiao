@@ -86,6 +86,7 @@ import ArticleConten from '@/views/Article/ArticleConten.vue'
 import { GetArticle, GetComment, SendComments, attention, NotAttention, collects, NotCollects, SetLike, CancelLike } from '@/api/index.js'
 // import { Toast } from 'vant'
 import DiscussVue from '@/components/discuss/discussVue.vue'
+import { GetToken } from '@/utils/token'
 export default {
   data () {
     return {
@@ -162,7 +163,7 @@ export default {
   // 组件激活
   async activated () {
     this.html = ''
-    GetArticle(this.$route.params.id).then(value => {
+    GetArticle(JSON.parse(GetToken('login'))).then(value => {
       if (value) {
         // 主体文本内容
         this.html = value.data.content
@@ -177,7 +178,6 @@ export default {
       } else {
         this.show2 = true
         Toast.fail('加载失败')
-        this.$router.push('/User/History')
       }
     })
   },

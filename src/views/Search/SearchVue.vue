@@ -19,6 +19,7 @@ import { GetToken, SetToken } from '@/utils/token'
 import SearchHistory from './SearchHistory/SearchHistory.vue'
 import SearchAssociate from './SearchAssociate/SearchAssociate.vue'
 import { SearchLenovo } from '@/api/index'
+import eventBus from '@/utils/eventBus'
 export default {
   data () {
     return {
@@ -32,6 +33,10 @@ export default {
   created () {
     // 设置Router的值，说明当前是搜索页面的mainvue组件
     this.$store.commit('SetRouter', '/Search')
+    eventBus.$on('LenoveClick', value => {
+      this.value = ''
+      this.ele = 'SearchHistory'
+    })
   },
   methods: {
     // 搜索联想的防抖
@@ -55,7 +60,7 @@ export default {
           // } else {
           //   this.ele = 'SearchHistory'
           // }
-        }, 500)
+        }, 400)
       }
       antiShake()
     },

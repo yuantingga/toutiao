@@ -120,32 +120,31 @@ export default {
 
     // 用于区分首页，搜索页面，历史界面
     '$store.state.Route': async function (newVal) {
-      // 当进行切换到不同的页面那么就将list中的数据进行情况，并进行进行加载数据
-      // this.list = []
-      // this.onLoad()
       this.loading = false
     },
 
     // 监听搜索关键字的变化，而导致组件渲染不同的数据
     '$store.state.value': function (newVal) {
+      this.list = []
       this.$store.dispatch('glideEvent').then((value) => {
-        this.list = value
+        console.log(value)
+        if (value.length > 0) {
+          this.list = value
+        } else {
+          this.finished = true
+        }
       })
     }
 
   },
-  // activated () {
-  //   this.loading = false
-  // },
+  destroyed () {
+    this.loading = false
+  },
   methods: {
     // 跳转到文章详情页面
     ArticleEvent (item) {
-      console.log(item.art_id)
-      this.$router.push({
-        path: `/article/${item.art_id}`
-      })
-      SetToken('login', JSON.stringify(`/article/${item.art_id}`))
-      console.log(1111)
+      this.$router.push(`/article/${item.art_id}`)
+      SetToken('login', JSON.stringify(item.art_id))
     },
     // 第二个面板点击返回显示第一个面板
     PanelCancel () {
@@ -191,6 +190,7 @@ export default {
           // 如果获取的是一个空数组那么
           if (value.length === 0) {
             this.finished = true
+            return ''
           }
           value.forEach(element => {
             // this.CellList.push(element)
