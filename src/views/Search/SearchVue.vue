@@ -18,6 +18,7 @@
 import { GetToken, SetToken } from '@/utils/token'
 import SearchHistory from './SearchHistory/SearchHistory.vue'
 import SearchAssociate from './SearchAssociate/SearchAssociate.vue'
+import { SearchLenovo } from '@/api/index'
 export default {
   data () {
     return {
@@ -35,15 +36,26 @@ export default {
   methods: {
     // 搜索联想的防抖
     AntiShake () {
-      this.ele = 'SearchAssociate'
       clearTimeout(this.obj.time)
       const antiShake = () => {
         clearTimeout(this.obj.time)
         this.obj.time = setTimeout(() => {
           console.log(this.value)
-
-          this.ele = 'SearchAssociate'
-        }, 1000)
+          if (this.value.trim() === '') {
+            this.ele = 'SearchHistory'
+          }
+          SearchLenovo(this.value).then(value => {
+            if (value.data.options[0]) {
+              this.$store.commit('SetLenovo', value.data.options)
+              this.ele = 'SearchAssociate'
+            } else {
+              this.ele = 'SearchHistory'
+            }
+          })
+          // } else {
+          //   this.ele = 'SearchHistory'
+          // }
+        }, 500)
       }
       antiShake()
     },
@@ -71,6 +83,7 @@ export default {
     back () {
       this.$router.push('/Index/Content')
       this.$store.commit('SetRouter', '/Index/Content')
+      this.value = ''
     }
   },
   components: { SearchHistory, SearchAssociate }

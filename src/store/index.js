@@ -18,10 +18,14 @@ export default new Vuex.Store({
     // 搜索关键字
     value: '',
     // 个人用户界面请求数据存储
-    User: ''
+    User: '',
+    // 搜索联想数组
+    Lenovo: ''
   },
   mutations: {
-
+    SetLenovo (state, value) {
+      state.Lenovo = value
+    },
     // 搜索关键字
     SetValue (state, value) {
       state.value = value

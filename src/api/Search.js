@@ -13,6 +13,14 @@ function SearchResult (value) {
     console.log(error)
   }
 }
+function SearchLenovo (value) {
+  return axioss({
+    url1: '/suggestion',
+    params: {
+      q: value
+    }
+  })
+}
 export {
-  SearchResult
+  SearchResult, SearchLenovo
 }

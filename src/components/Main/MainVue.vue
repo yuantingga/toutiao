@@ -121,8 +121,9 @@ export default {
     // 用于区分首页，搜索页面，历史界面
     '$store.state.Route': async function (newVal) {
       // 当进行切换到不同的页面那么就将list中的数据进行情况，并进行进行加载数据
-      this.list = []
-      this.onLoad()
+      // this.list = []
+      // this.onLoad()
+      this.loading = false
     },
 
     // 监听搜索关键字的变化，而导致组件渲染不同的数据
@@ -133,9 +134,8 @@ export default {
     }
 
   },
-  // Deactivated () {
-  //   // 当main组件被缓存时将list中的数据进行清空
-  //   this.list = []
+  // activated () {
+  //   this.loading = false
   // },
   methods: {
     // 跳转到文章详情页面
