@@ -38,6 +38,7 @@ export default {
         this.active = value
         this.$router.push(value)
       }
+      return value === '/Index/Content' ? this.$store.commit('SetRouter', value) : ''
     }
   }
 }

@@ -2,17 +2,24 @@
   <div class="shi">
     <div ref="dialog" class="dialog">
       <div class="robot">
-        <div class="header"></div>
+        <van-image class="header" round  src="https://img01.yzcdn.cn/vant/cat.jpeg">
+            <template v-slot:loading>
+
+            </template>
+          </van-image>
         <div class="content">我是小思</div>
       </div>
-      <div class="user" v-for="(item, index) in user" :key="index">
+      <div class="user"  v-for="(item, index) in user" :key="index">
         <div class="content">{{ item }}</div>
-        <div class="header" ref="header"></div>
+         <van-image round  class="header"  :src="photo">
+            <template v-slot:loading>
+            </template>
+          </van-image>
       </div>
     </div>
     <div class="inputbox">
       <div class="box">
-        <van-field v-model="value" placeholder="说点什么....." />
+        <van-field v-model="value" placeholder="说点什么....." @keyup.enter="SubmitEvent" />
         <span @click="SubmitEvent">提交</span>
       </div>
     </div>
@@ -30,7 +37,8 @@ export default {
       header: '',
       // 用户输入的信息
       user: ['我是用户'],
-      socket: ''
+      socket: '',
+      photo: GetToken('photo')
     }
   },
   async created () {
@@ -38,12 +46,12 @@ export default {
       // 通过store进行设置获取用户信息,进行发送请求获取用户信息
       // 使用this.header属性进行存储图片信息
       this.header = value.data.photo
-      // 获取到页面上所有的header组件进行设置信息头像
-      const headerDom = this.$refs.header
-      // 通过遍历进行获取到页面每一个header组件进行设置北京图片
-      headerDom.forEach((element) => {
-        element.style.background = `url(${value.data.photo})`
-      })
+      // // 获取到页面上所有的header组件进行设置信息头像
+      // const headerDom = this.$refs.header
+      // // 通过遍历进行获取到页面每一个header组件进行设置北京图片
+      // headerDom.forEach((element) => {
+      //   element.style.background = `url(${value.data.photo})`
+      // })
     })
 
     // 发送websocket请求，进行获取到小机器人的数据
@@ -67,9 +75,12 @@ export default {
     // 响应回来的数据，使用的也是自定义事件
     this.socket.on('message', (obj) => {
       const str = `<div class="robot" >
-        <div class="header"></div>
+         <div class="header"  >
+            <img  src="https://img01.yzcdn.cn/vant/cat.jpeg" alt=''/>
+          </div>
         <div class="content">${obj.msg}</div>
       </div>`
+      console.log(str)
       // 进行添加字符串
       this.$refs.dialog.insertAdjacentHTML('beforeend', str)
     })
@@ -83,13 +94,6 @@ export default {
       this.socket.emit('message', { msg: data })
       // 添加用户自己输入的内容的信息
       this.user.push(data)
-      // 用户编辑输入的信息，进行获取到，修改他的头像的图片
-      this.$nextTick(function () {
-        const headerDom = this.$refs.header
-        headerDom.forEach((element) => {
-          element.style.background = `url(${this.header})`
-        })
-      })
     }
   }
 }
@@ -104,6 +108,7 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
+  padding-right: 5px;
   .user {
     display: flex;
     float: right;
@@ -147,9 +152,12 @@ export default {
     .header {
       width: 50px;
       height: 50px;
-      background: url('https://img01.yzcdn.cn/vant/cat.jpeg') no-repeat;
-      background-size: 100% 100%;
       border-radius: 50%;
+      img{
+        width: 100%;
+        height: 100%;
+      border-radius: 50%;
+      }
     }
     .content {
       padding: 10px;

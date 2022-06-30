@@ -47,14 +47,10 @@ export default {
     }
   },
   async created () {
-    // // 获取token当他的值不存在那么就跳转到登陆界面
-    // if (!GetToken('token')) {
-    //   this.$router.push('/login')
-    // }
-
     this.$store.dispatch('SetUser').then((value) => {
       console.log(value)
       this.user = value.data
+      SetToken('photo', value.data.photo)
     }).catch((value) => {
       console.log(value)
     })

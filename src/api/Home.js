@@ -7,6 +7,7 @@ import { GetToken, RemoveToken, SetToken } from '@/utils/token'
 axios.interceptors.response.use(function (config) {
   return Promise.resolve(config.data)
 }, async function (err) {
+  console.log(err)
   // 响应还未报错跳转页面
   if (err.response.status === 401) {
     // 由于区分token是正确还是错误的
@@ -14,8 +15,13 @@ axios.interceptors.response.use(function (config) {
     // 获取新的token
     const { data: res } = await Token()
     SetToken('token', res.token)
-    axios(err.config)
     SetToken('err', 'true')
+    return Promise.resolve(axios(err.config))
+  } else if (err.response.status === 500 && err.config.url === '/authorizations' && err.config.method === 'put') {
+    console.log(err.config.method)
+    RemoveToken('refresh_token')
+    RemoveToken('token')
+    router.replace('/login')
   }
 })
 axios.interceptors.request.use(function (config) {

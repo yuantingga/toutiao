@@ -2,7 +2,7 @@
   <div class="article">
 
     <!-- 文章详情的头部 点击小图标进行返回 -->
-    <van-nav-bar title="文章详情" left-arrow @click-left="$router.push('/Index/Content')" />
+    <van-nav-bar title="文章详情" left-arrow @click-left="$router.back()" />
     <!-- 加载组件的显示，等请求数据成功后才显示list组件的内容，
     当组件被缓存将show2设置为false那么点击每一个组件都会重新显示加载修改等待请求数据成功-->
     <van-loading v-show="!show2" size="24px" color="#1989fa" style="margin-top:10px">加载中...</van-loading>
@@ -80,6 +80,7 @@
 
 <script>
 // import $ from 'jquery'
+import { Toast } from 'vant'
 import ArticleConten from '@/views/Article/ArticleConten.vue'
 // eslint-disable-next-line no-unused-vars
 import { GetArticle, GetComment, SendComments, attention, NotAttention, collects, NotCollects, SetLike, CancelLike } from '@/api/index.js'
@@ -127,8 +128,16 @@ export default {
   created () {
     // 获取评论信息
     GetComment(this.$route.params.id).then(value => {
+      if (value) {
+        this.text = value.data.results
+      } else {
+        this.show2 = true
+        Toast.fail('加载失败')
+        this.$router.back()
+        Toast.clear()
+      }
+    }).catch(value => {
       console.log(value)
-      this.text = value.data.results
     })
     console.log('文章组件激活')
   },
@@ -154,18 +163,22 @@ export default {
   async activated () {
     this.html = ''
     GetArticle(this.$route.params.id).then(value => {
-      console.log('激活')
-      console.log(value)
-      // 主体文本内容
-      this.html = value.data.content
-      // 关注的状态
-      this.attention = value.data.is_followed
-      // 存储res返回的星星
-      this.user = value.data
-      // 小星星的状态收藏的状态
-      this.star = value.data.is_collected
-      // 控制显示加载中还是文章详情内容
-      this.show2 = true
+      if (value) {
+        // 主体文本内容
+        this.html = value.data.content
+        // 关注的状态
+        this.attention = value.data.is_followed
+        // 存储res返回的星星
+        this.user = value.data
+        // 小星星的状态收藏的状态
+        this.star = value.data.is_collected
+        // 控制显示加载中还是文章详情内容
+        this.show2 = true
+      } else {
+        this.show2 = true
+        Toast.fail('加载失败')
+        this.$router.push('/User/History')
+      }
     })
   },
   methods: {

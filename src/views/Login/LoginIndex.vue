@@ -37,7 +37,10 @@ export default {
       this.Loading = true
       this.Disabled = true
       login(values).then(value => {
-        console.log(value)
+        Toast.loading({
+          message: '加载中...',
+          forbidClick: true
+        })
         SetToken('token', value.data.token)
         SetToken('refresh_token', value.data.refresh_token)
         SetToken('login', '/Index/User')
