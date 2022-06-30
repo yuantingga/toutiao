@@ -2,47 +2,30 @@
   <div class="Search">
     <div class="SearchHeader">
       <span class="iconfont icon-zuo" @click="back"></span>
-      <!-- 触发search进行搜索关键字，
-          通过v-model进行获取输入框中的数据
-          shape="round" 输入框为圆形
-       -->
-      <van-search @search="SearchKeyword" v-model="value" shape="round"
+      <van-search @keyup.prevent="AntiShake" @search="SearchKeyword" v-model="value" shape="round"
        background="cornflowerblue" placeholder="请输入搜索关键词" />
     </div>
-    <div class="text">
-      <span>搜索历史</span>
-      <!-- 清空历史记录 -->
-      <svg @touchstart.prevent="clear" t="1655445808268" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7841" width="200" height="200">
-        <path
-          d="M895.464448 119.006208 677.967872 119.006208c0 0-32.8448 1.020928-58.648576-26.943488-10.395648-12.050432-27.804672-23.795712-56.4224-24.799232l-41.183232 0-6.280192 0-41.182208 0c-28.618752 1.004544-46.031872 12.749824-56.4224 24.799232-25.807872 27.964416-58.6496 26.943488-58.6496 26.943488L141.682688 119.006208c-13.99296 0-25.33888 11.34592-25.33888 25.33888l0 93.090816c-0.053248 26.927104 26.083328 26.396672 26.083328 26.396672l49.83808 0L192.265216 913.65376c0 0-3.966976 44.084224 40.121344 46.45888l269.31712 0 33.738752 0 30.808064 0.238592 38.500352 0 174.934016 0 24.297472 0 0.782336-0.238592c44.080128-2.374656 40.117248-46.45888 40.117248-46.45888L844.88192 263.832576l49.842176 0c0 0 26.133504 0.530432 26.083328-26.396672l0-93.090816C920.8064 130.353152 909.46048 119.006208 895.464448 119.006208zM430.539776 803.171328c0 17.042432-13.828096 30.865408-30.865408 30.865408-17.042432 0-30.865408-13.824-30.865408-30.865408L368.80896 320.736256c0-17.042432 13.824-30.865408 30.865408-30.865408 17.038336 0 30.865408 13.824 30.865408 30.865408L430.539776 803.171328zM663.436288 803.171328c0 17.042432-13.824 30.865408-30.865408 30.865408-17.038336 0-30.865408-13.824-30.865408-30.865408L601.705472 320.736256c0-17.042432 13.828096-30.865408 30.865408-30.865408 17.041408 0 30.865408 13.824 30.865408 30.865408L663.436288 803.171328z"
-          p-id="7842"
-        ></path>
-      </svg>
-    </div>
-    <!-- 历史记录的遍历绘制 -->
-    <div class="history">
-    <!-- 历史记录的点击事件，进行跳转到搜索结果页面并将数据进行渲染
-      通过监听vuex中的value搜索关键字的变化
-
-     -->
-      <div @click="HistoryEvent(item)"  v-for="(item, index) in history" :key="index">{{ item }}</div>
-    </div>
+    <!-- 搜索联想组件 -->
+    <!-- 搜索历史组件 -->
+    <keep-alive>
+      <component :is="ele"></component>
+    </keep-alive>
   </div>
 </template>
 
 <script>
 // eslint-disable-next-line no-unused-vars
-import { GetToken, SetToken, RemoveToken } from '@/utils/token'
-// eslint-disable-next-line no-unused-vars
-import { SearchResult } from '@/api/index'
+import { GetToken, SetToken } from '@/utils/token'
+import SearchHistory from './SearchHistory/SearchHistory.vue'
+import SearchAssociate from './SearchAssociate/SearchAssociate.vue'
 export default {
   data () {
     return {
       // 搜索关键字
       value: '',
-      // 历史记录
-      history: JSON.parse(GetToken('history')) || []
-      // 缓存对象
+      obj: {},
+      history: JSON.parse(GetToken('history')) || [],
+      ele: 'SearchHistory'
     }
   },
   created () {
@@ -50,45 +33,47 @@ export default {
     this.$store.commit('SetRouter', '/Search')
   },
   methods: {
-    // 清空历史记录
-    clear () {
-      // 发送清空历史记录请求
-      this.history = []
-      RemoveToken('history')
-      // 点击清空历史记录
+    // 搜索联想的防抖
+    AntiShake () {
+      this.ele = 'SearchAssociate'
+      clearTimeout(this.obj.time)
+      const antiShake = () => {
+        clearTimeout(this.obj.time)
+        this.obj.time = setTimeout(() => {
+          console.log(this.value)
+
+          this.ele = 'SearchAssociate'
+        }, 1000)
+      }
+      antiShake()
     },
     // 搜索事件
     async SearchKeyword () {
+      console.log(this.value)
+      // 需要传递到searchHisory中的props属性中
       // value是搜索关键字
       const value = this.value
-
       // 进行遍历，判断历史对象中是否又该关键字，又就不能进行添加history这个对象中
       const flag = this.history.some(ele => value === ele)
       if (!flag) {
         this.history.push(value)
       }
-
       // 将this.history添加到本地缓存中，刷新搜索页面不会丢失历史记录
-
       SetToken('history', JSON.stringify(this.history))
+      this.ele = 'SearchHistory'
       // 修改历史关键字
       this.$store.commit('SetValue', this.value)
       this.$store.commit('SetRouter', '/Search')
       this.$router.push(`/Search/${this.value}`)
       this.value = ''
     },
-    // 历史记录的点击
-    HistoryEvent (item) {
-      this.$store.commit('SetValue', item)
-      this.$store.commit('SetRouter', '/Search')
-      this.$router.push(`/Search/${item}`)
-    },
     // 点击返回就跳转到首页
     back () {
       this.$router.push('/Index/Content')
       this.$store.commit('SetRouter', '/Index/Content')
     }
-  }
+  },
+  components: { SearchHistory, SearchAssociate }
 }
 
 </script>

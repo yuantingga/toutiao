@@ -1,5 +1,5 @@
 <template>
-  <div>阅读新闻</div>
+  <div>2222222222222222</div>
 </template>
 
 <script>
