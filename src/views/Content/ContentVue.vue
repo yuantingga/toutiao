@@ -22,7 +22,7 @@
           <van-tab :name="item.id" v-for="item in TabsList" :title="item.name" :key="item.id"> </van-tab>
         </van-tabs>
         <!-- addbtn选项的是一个加号他是跳转到频道页面的路由 -->
-        <div class="addBtn" @touchstart.prevent="$router.push('/channel')">+</div>
+        <div class="addBtn" @click.prevent="$router.push('/channel')">+</div>
       </div>
     </div>
     <!-- 新闻信息列表组件封装，使用的是$stope中的数据进行发送网络请求进行遍历数据生成新闻列表 -->
@@ -50,18 +50,19 @@ export default {
       // 获取tabs中的选项数据
       TabsList: '',
       // 保持tabs选项选中状态，如果获取不到本地缓存中的数据，那么就是使用0 作为默认值
-      TabsSelect: parseInt(sessionStorage.getItem('Tab')) || 0,
+      TabsSelect: JSON.parse(GetToken('Tab')) || 0,
       isLoading: ''
     }
   },
 
-  watch: {
-    // 监听tab属性中数据变化，从而将选中中的选项发送到本地缓存中进行保存
-    '$store.state.Tab': function (newVal) {
-      SetToken('Tab', newVal)
-      this.TabsSelect = newVal
-    }
-  },
+  // watch: {
+  //   // 监听tab属性中数据变化，从而将选中中的选项发送到本地缓存中进行保存
+  //   '$store.state.Tab': function (newVal) {
+  //     console.log(newVal);
+  //     SetToken('Tab', newVal)
+  //     this.TabsSelect = newVal
+  //   }
+  // },
 
   async created () {
     try {
@@ -87,13 +88,10 @@ export default {
       this.$router.push('/Search')
     },
     Tabs (value) {
-      // 将tabs发送选项状态的变化存储在本地缓存中使刷新页面并不会丢失选中元素
-
-      SetToken('Tab', value)
-      // 传递到stope对象中用于发送不同的数据进行渲染页面
-      this.$store.commit('setTab', value)
-      // 并将tabs的选中元素进行切换
-      this.TabsSelect = GetToken('Tab')
+      console.log(value + '我是change事件')
+      SetToken('Tab', JSON.stringify(value))
+      this.$store.commit('SetTab', value)
+      this.TabsSelect = value
     },
     onRefresh () {
       setTimeout(async () => {

@@ -2,8 +2,8 @@
   <div class="app">
     <div class="indexx">
     <router-link to="Index"></router-link>
-    <keep-alive>
-    <router-view></router-view>
+    <keep-alive exclude="ChannelVue,EditVue,HistoryVue,SmallFour,SearchVue">
+      <router-view></router-view>
     </keep-alive>
     </div>
   </div>

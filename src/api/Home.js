@@ -3,23 +3,13 @@ import $ from 'jquery'
 import router from '@/router/index.js'
 import { Token } from '@/api'
 import { GetToken, RemoveToken, SetToken } from '@/utils/token'
-
 axios.interceptors.response.use(function (config) {
   return Promise.resolve(config.data)
-}, async function (err) {
-  console.log(err)
-  // 响应还未报错跳转页面
+// eslint-disable-next-line node/handle-callback-err
+}, function (err) {
   if (err.response.status === 401) {
-    // 由于区分token是正确还是错误的
+    SetToken('login', JSON.stringify(`${router.back()}`))
     SetToken('err', 'false')
-    // 获取新的token
-    const { data: res } = await Token()
-    SetToken('token', res.token)
-    SetToken('err', 'true')
-    return Promise.resolve(axios(err.config))
-  } else if (err.response.status === 500 && err.config.url === '/authorizations' && err.config.method === 'put') {
-    console.log(err.config.method)
-    RemoveToken('refresh_token')
     RemoveToken('token')
     router.replace('/login')
   }

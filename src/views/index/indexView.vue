@@ -14,7 +14,7 @@
 
 <script>
 import EventBus from '@/utils/eventBus'
-import { GetToken } from '@/utils/token'
+import { GetToken, SetToken } from '@/utils/token'
 // import { GetToken } from '@/utils/token.js'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -34,10 +34,10 @@ export default {
     // 点击首页和我的进行切换路由，双向数据绑定active中的值
     // 底部导航的变化
     onChange (value) {
-      if (GetToken('token')) {
-        this.active = value
-        this.$router.push(value)
+      if (!GetToken('token')) {
+        this.active = this.$route.path
       }
+      this.$router.push(value)
       return value === '/Index/Content' ? this.$store.commit('SetRouter', value) : ''
     }
   }

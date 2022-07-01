@@ -1,7 +1,7 @@
 <template>
   <div class="Search">
     <div class="SearchHeader">
-      <span class="iconfont icon-zuo" @click="back"></span>
+      <span class="iconfont icon-zuo" @click.prevent="back"></span>
       <van-search @keyup.prevent="AntiShake" @search="SearchKeyword" v-model="value" shape="round"
        background="cornflowerblue" placeholder="请输入搜索关键词" />
     </div>
@@ -21,6 +21,7 @@ import SearchAssociate from './SearchAssociate/SearchAssociate.vue'
 import { SearchLenovo } from '@/api/index'
 import eventBus from '@/utils/eventBus'
 export default {
+  name: 'SearchVue',
   data () {
     return {
       // 搜索关键字
@@ -33,10 +34,14 @@ export default {
   created () {
     // 设置Router的值，说明当前是搜索页面的mainvue组件
     this.$store.commit('SetRouter', '/Search')
+
     eventBus.$on('LenoveClick', value => {
       this.value = ''
       this.ele = 'SearchHistory'
     })
+  },
+  activated () {
+    this.ele = 'SearchHistory'
   },
   methods: {
     // 搜索联想的防抖
@@ -60,7 +65,7 @@ export default {
           // } else {
           //   this.ele = 'SearchHistory'
           // }
-        }, 400)
+        }, 700)
       }
       antiShake()
     },
@@ -78,7 +83,7 @@ export default {
       // 将this.history添加到本地缓存中，刷新搜索页面不会丢失历史记录
       SetToken('history', JSON.stringify(this.history))
       this.ele = 'SearchHistory'
-      // 修改历史关键字
+      // 修改历史关键字,回车进行显示搜索结果组件并修改
       this.$store.commit('SetValue', this.value)
       this.$store.commit('SetRouter', '/Search')
       this.$router.push(`/Search/${this.value}`)

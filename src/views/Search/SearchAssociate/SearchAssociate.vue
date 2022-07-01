@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-cell @click="SearchResult(item)" v-for="(item,index) in options" :key="index"  :title="item" icon="search" />
+    <van-cell @click.prevent="SearchResult(item)" v-for="(item,index) in options" :key="index"  :title="item" icon="search" />
   </div>
 </template>
 
@@ -18,11 +18,16 @@ export default {
   },
   methods: {
     SearchResult (item) {
-      const arr = JSON.parse(GetToken('history'))
-      const flag = arr.some(ele => item === ele)
-      if (!flag) {
+      let arr = JSON.parse(GetToken('history'))
+      if (!arr) {
+        arr = []
+        arr.push(item)
+      } else {
+        const flag = arr.some(ele => item === ele)
+        if (flag) return
         arr.push(item)
       }
+
       // 将this.history添加到本地缓存中，刷新搜索页面不会丢失历史记录
       SetToken('history', JSON.stringify(arr))
       eventBus.$emit('LenoveClick')

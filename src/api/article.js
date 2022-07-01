@@ -21,15 +21,14 @@ function GetComment (id) {
   })
 }
 // 发送评论
-function SendComments ({ target, content }) {
-  console.log(target)
-  console.log(content)
+function SendComments ({ target, content, artid }) {
   return axioss({
     url1: '/comments',
     method: 'post',
     data: {
       target,
-      content
+      content,
+      art_id: artid
     },
     headers: {
       Authorization: `Bearer ${GetToken('token')}`

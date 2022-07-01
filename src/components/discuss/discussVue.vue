@@ -11,7 +11,7 @@
             </div>
             <span>{{list.aut_name}}</span>
           </div>
-          <div class="love" @click="CutLove">
+          <div class="love" @click.prevent="CutLove">
             <van-icon v-if="love" color="red" name="like" />
             <van-icon v-else name="like-o" />
           </div>
@@ -40,7 +40,12 @@ export default {
       list: this.CommentInfo
     }
   },
-
+  watch: {
+    CommentInfo: function (newval) {
+      console.log(newval)
+      this.list = newval
+    }
+  },
   methods: {
     // 小爱心的点击于取消
     CutLove () {

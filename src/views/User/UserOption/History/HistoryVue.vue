@@ -11,9 +11,7 @@
 import MainVue from '@/components/Main/MainVue.vue'
 
 export default {
-  created () {
-
-  },
+  name: 'HistoryVue',
   activated () {
     this.$store.commit('SetRouter', '/User/History')
   },

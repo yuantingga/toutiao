@@ -18,7 +18,10 @@ export default new Vuex.Store({
     // 搜索关键字
     value: '',
     // 个人用户界面请求数据存储
-    User: '',
+    User: {
+      name: '',
+      photo: ''
+    },
     // 搜索联想数组
     Lenovo: ''
   },
@@ -33,6 +36,14 @@ export default new Vuex.Store({
     // 用于区分是首页还是搜索页面
     SetRouter (state, value) {
       state.Route = value
+    },
+    SetTab (state, value) {
+      state.Tab = value
+    },
+    SetUser (state, value) {
+      const name = value[0]
+      const value1 = value[1]
+      state.User[name] = value1
     }
 
   },

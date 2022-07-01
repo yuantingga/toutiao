@@ -1,10 +1,10 @@
 <template>
   <div>
     <van-list v-model="loading" :finished="finished" offset="0"  finished-text="没有更多了" @load="onLoad">
-      <div v-if="list.length != 0" class="list">
+      <div class="list">
       <!--ArticleEvent点击单元格实现跳转到文章详情页面  -->
       <!-- 通过v-for进行遍历 -->
-        <van-cell @click="ArticleEvent(item)" v-for="(item, index) in list" :key="index" :title="item.title">
+        <van-cell @click.prevent="ArticleEvent(item)" v-for="(item, index) in list" :key="index" :title="item.title">
           <!-- 图片只有一张时 -->
           <template #label v-if="item.cover.type === 0">
             <div class="CellLabel0">
@@ -39,7 +39,7 @@
           </template>
           <!-- 小叉号 -->
           <template #extra>
-            <div class="clone" @touchstart.prevent="Clone(item)">x</div>
+            <div class="clone" @click.prevent="Clone(item)">x</div>
           </template>
         </van-cell>
       </div>
@@ -100,16 +100,20 @@ export default {
       this.list = value
     })
   },
+
   watch: {
     // 这里是数据的切换导致显示不同额数据
     // 监听tab数据的变化
     // 在第一次渲染中或是下拉将数据进行获取到保存下来
     '$store.state.Tab': async function (newval) {
+      // 切换的tab，使用本地缓存进行获取如果存在那么就直接获取
+      // 不存在那么就获取并进行本地缓存
       if (JSON.parse(GetToken(`${newval}`))) {
         this.list = JSON.parse(GetToken(`${newval}`))
       } else {
         this.$store.dispatch('glideEvent').then((value) => {
           this.list = value
+
           SetToken(`${newval}`, JSON.stringify(value))
         }).catch(value => {
           console.log(value)
@@ -120,31 +124,39 @@ export default {
 
     // 用于区分首页，搜索页面，历史界面
     '$store.state.Route': async function (newVal) {
-      this.loading = false
+      console.log(newVal)
+      // this.loading = false
+      if (newVal === '/Index/Content' && JSON.parse(GetToken(`${GetToken('Tab')}`))) {
+        // 首页
+        this.list = JSON.parse(GetToken(`${GetToken('Tab')}`))
+      } else {
+        this.loading = false
+      }
     },
 
     // 监听搜索关键字的变化，而导致组件渲染不同的数据
     '$store.state.value': function (newVal) {
       this.list = []
-      this.$store.dispatch('glideEvent').then((value) => {
-        console.log(value)
-        if (value.length > 0) {
-          this.list = value
-        } else {
-          this.finished = true
-        }
-      })
+      if (JSON.parse(GetToken(newVal))) {
+        this.list = JSON.parse(GetToken(newVal))
+      } else {
+        this.$store.dispatch('glideEvent').then((value) => {
+          if (value.length > 0) {
+            this.list = value
+            SetToken(newVal, JSON.stringify(value))
+          } else {
+            this.finished = true
+          }
+        })
+      }
     }
 
-  },
-  destroyed () {
-    this.loading = false
   },
   methods: {
     // 跳转到文章详情页面
     ArticleEvent (item) {
       this.$router.push(`/article/${item.art_id}`)
-      SetToken('login', JSON.stringify(item.art_id))
+      SetToken('art_id', JSON.stringify(item.art_id))
     },
     // 第二个面板点击返回显示第一个面板
     PanelCancel () {
@@ -182,7 +194,6 @@ export default {
 
     // list的上拉刷新
     onLoad () {
-      console.log('加载')
       setTimeout(() => {
         // 这里是第一次加载数据，或是下拉数据的获取
         this.$store.dispatch('glideEvent').then((value) => {
@@ -193,24 +204,10 @@ export default {
             return ''
           }
           value.forEach(element => {
-            // this.CellList.push(element)
-            // console.log(element)
             this.list.push(element)
           })
-
-          // for (let i = 0; i < 10; i++) {
-          //   if (this.CellList[this.list.length]) {
-          //     this.list.push(this.CellList[this.list.length])
-          //   }
-          // }
-          // 加载状态结束
           this.loading = false
-          // 数据全部加载完成
-          // if (this.list.length >= 40) {
-          //   this.finished = true
-          // }
         }).catch((value) => {
-          console.log(value)
           this.list = []
           this.finished = true
         })

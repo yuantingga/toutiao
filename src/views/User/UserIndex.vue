@@ -21,15 +21,15 @@
         </div>
         <div>
           <div>{{ user.fans_count }}</div>
-          <div >粉丝</div><!--@click="FansEvent"-->
+          <div >粉丝</div><!--@click.prevent="FansEvent"-->
         </div>
       </div>
     </div>
     <div class="UserMain">
-      <van-cell @click="Edit" title="编辑资料" icon="location-o" is-link />
-      <van-cell @click="SetHistory" title="历史记录" icon="location-o" is-link />
-      <van-cell @click="SmallFour" title="小四同学" icon="chat-o" is-link />
-      <van-cell @click="quit" title="退出登陆" icon="warning-o" is-link />
+      <van-cell @click.prevent="Edit" title="编辑资料" icon="location-o" is-link />
+      <van-cell @click.prevent="SetHistory" title="历史记录" icon="location-o" is-link />
+      <van-cell @click.prevent="SmallFour" title="小四同学" icon="chat-o" is-link />
+      <van-cell @click.prevent="quit" title="退出登陆" icon="warning-o" is-link />
     </div>
   </div>
 </template>
@@ -48,14 +48,18 @@ export default {
   },
   async created () {
     this.$store.dispatch('SetUser').then((value) => {
-      console.log(value)
       this.user = value.data
-      SetToken('photo', value.data.photo)
     }).catch((value) => {
-      console.log(value)
     })
   },
-
+  watch: {
+    '$store.state.User.name': function (newval) {
+      console.log(newval)
+    },
+    '$store.state.User.photo': function (newval) {
+      console.log(newval)
+    }
+  },
   methods: {
     // 退出
     quit () {

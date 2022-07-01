@@ -1,17 +1,16 @@
 <template>
   <div class="article">
-
     <!-- 文章详情的头部 点击小图标进行返回 -->
-    <van-nav-bar title="文章详情" left-arrow @click-left="$router.back()" />
+    <van-nav-bar title="文章详情" left-arrow @click-left="$router.replace('/Index/Content')" />
     <!-- 加载组件的显示，等请求数据成功后才显示list组件的内容，
     当组件被缓存将show2设置为false那么点击每一个组件都会重新显示加载修改等待请求数据成功-->
-    <van-loading v-show="!show2" size="24px" color="#1989fa" style="margin-top:10px">加载中...</van-loading>
+    <van-loading v-show="!show2" size="24px" color="#1989fa" style="margin-top: 10px">加载中...</van-loading>
     <!-- list 用于包裹所有的新闻详细信息和评论列表内容
     v-show="show2"等待请求数据成功，才进行显示内容
      -->
 
     <van-list v-show="show2" v-model="loading" ref="list" :finished="finished" finished-text="没有更多了" @load="onLoad">
-     <!-- 头部   -->
+      <!-- 头部   -->
       <div class="title">
         <div class="header">
           <div class="img">
@@ -25,7 +24,7 @@
             <span>{{ user.pubdate }}</span>
           </div>
         </div>
-        <div class="concern" @click="attentionEvent">
+        <div class="concern" @click.prevent="attentionEvent">
           <van-tag v-if="attention" type="primary">已关注</van-tag>
           <van-tag v-else plain type="primary">+关注</van-tag>
         </div>
@@ -33,15 +32,15 @@
 
       <van-divider />
       <!-- 中间内容 -->
-      <ArticleConten>
+      <ArticleConten @click.prevent="contentEvent">
         <template>
           <div class="content" v-html="html"></div>
         </template>
       </ArticleConten>
-     <!-- 分割线 -->
+      <!-- 分割线 -->
       <van-divider dashed>end</van-divider>
-     <!-- 点赞部分 -->
-      <div class="praise" @click="PraiseEvent">
+      <!-- 点赞部分 -->
+      <div class="praise" @click.prevent="PraiseEvent">
         <van-tag v-if="like" type="danger"> <van-icon name="good-job-o" />点赞 </van-tag>
         <van-tag v-else plain type="danger"> <van-icon name="good-job-o" />已点赞 </van-tag>
       </div>
@@ -52,22 +51,23 @@
       <!-- 底部导航，进行发布评论分享收藏等 -->
       <van-tabbar ref="tabbar">
         <div v-show="input === true">
-          <textarea placeholder="友善评论，理想发言，阳光心灵" v-focus ref="textarea" name="" id="" cols="30" rows="10" @blur="loadEvent"></textarea>
-          <span @touchstart.prevent="addDiscuss">发送</span>
+          <textarea placeholder="友善评论，理想发言，阳光心灵"
+          v-focus ref="textarea" name="" id="" cols="30" rows="10" ></textarea>
+          <span @click.prevent="addDiscuss">发送</span>
         </div>
         <div v-show="input === false">
-          <van-icon name="arrow-left" @click="$router.back()"/>
+          <van-icon name="arrow-left" @click.prevent="$router.back()" />
 
           <input type="text" @focus="FocusEvent" placeholder="发表评论" />
           <div class="icon">
             <van-badge :content="text.length">
-              <van-icon name="comment-o" @click="discussList" />
+              <van-icon name="comment-o" @click.prevent="discussList" />
             </van-badge>
-            <div @click="starEvent">
+            <div @click.prevent="starEvent">
               <van-icon v-if="this.user.is_collected" color="yellow" name="star" />
               <van-icon v-else name="star-o" />
             </div>
-            <van-icon name="share-o" @click="share" />
+            <van-icon name="share-o" @click.prevent="share" />
           </div>
         </div>
       </van-tabbar>
@@ -87,6 +87,7 @@ import { GetArticle, GetComment, SendComments, attention, NotAttention, collects
 // import { Toast } from 'vant'
 import DiscussVue from '@/components/discuss/discussVue.vue'
 import { GetToken } from '@/utils/token'
+
 export default {
   data () {
     return {
@@ -128,18 +129,20 @@ export default {
   },
   created () {
     // 获取评论信息
-    GetComment(this.$route.params.id).then(value => {
-      if (value) {
-        this.text = value.data.results
-      } else {
-        this.show2 = true
-        Toast.fail('加载失败')
-        this.$router.back()
-        Toast.clear()
-      }
-    }).catch(value => {
-      console.log(value)
-    })
+    GetComment(JSON.parse(GetToken('art_id')))
+      .then((value) => {
+        if (value) {
+          this.text = value.data.results
+        } else {
+          this.show2 = true
+          Toast.fail('加载失败')
+          this.$router.back()
+          Toast.clear()
+        }
+      })
+      .catch((value) => {
+        console.log(value)
+      })
     console.log('文章组件激活')
   },
   // 自动获取焦点指令
@@ -163,7 +166,7 @@ export default {
   // 组件激活
   async activated () {
     this.html = ''
-    GetArticle(JSON.parse(GetToken('login'))).then(value => {
+    GetArticle(JSON.parse(GetToken('art_id'))).then((value) => {
       if (value) {
         // 主体文本内容
         this.html = value.data.content
@@ -182,6 +185,9 @@ export default {
     })
   },
   methods: {
+    contentEvent () {
+      console.log('内容点击')
+    },
     onLoad () {
       // 拉到最底下显示没有更多数据
       this.finished = true
@@ -192,33 +198,38 @@ export default {
     },
     // 留言框失去焦点切换回去
     loadEvent () {
-      this.input = !this.input
+      this.input = false
     },
     // 发送评论
     async addDiscuss () {
-      const target = this.$route.params.id
+      const target = JSON.parse(GetToken('art_id'))
       const content = this.$refs.textarea.value.trim()
+      const artid = JSON.parse(GetToken('art_id'))
       if (content !== '') {
-        SendComments({ target, content }).then(value => {
-          // 评论是通过自定义属性进行传递数据给子组件，将传递过去的数据进行再次添加数据
-          // 子组件会自动监听到数据的变化，从而添加新的评论到页面中
+        SendComments({ target, content, artid }).then((value) => {
           this.text.unshift(value.data.new_obj)
-          // 进行添加
-          this.$refs.textarea.value = ''
-          this.input = !this.input
         })
+        this.$refs.textarea.value = ''
+        this.input = false
+      } else {
+        Toast('文本为空')
+        this.$refs.textarea.value = ''
+        this.input = false
       }
     },
 
     // 评论显示个数点击滑动到评论底部
     discussList () {
+      console.log('点击')
       // 获取第一个评论信息组件距离页面底部的距离，滚动条向下滚动的距离就是多远
       const img = this.$refs.img[0]
       const height = document.documentElement.offsetHeight || document.body.offsetHeight
       // 进行滚动的元素
       const article = document.querySelector('.article')
       // 滚动的终点:使用第一条
-      const destination = img.offsetTop - height
+      const destination = img.$el.offsetTop - height / 2
+      console.log(destination)
+      console.log(height)
       if (img && destination > 0) {
         // 可视区域
         roll(article, 30, 100, destination)
@@ -232,7 +243,7 @@ export default {
               num = -num
             }
             // eslint-disable-next-line no-mixed-operators
-            if (num > 0 && destination < scrollTop || num < 0 && destination > scrollTop) {
+            if ((num > 0 && destination < scrollTop) || (num < 0 && destination > scrollTop)) {
               clearInterval(obj.time)
             }
             obj.scrollTop = scrollTop + num
@@ -280,7 +291,6 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-
 .article {
   height: 100%;
   overflow: auto;
@@ -380,6 +390,12 @@ export default {
       }
       span {
         color: white;
+
+        width: 70px;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       .van-icon {

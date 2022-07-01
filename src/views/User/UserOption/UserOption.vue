@@ -1,6 +1,6 @@
 <template>
   <div class="UserOption">
-    <van-nav-bar :title="title"  left-arrow   @click-left="onClickLeft" />
+    <van-nav-bar :title="title"  left-arrow   @click-left.prevent="onClickLeft" />
    <keep-alive>
      <component :is="$route.params.id"></component>
    </keep-alive>
@@ -12,7 +12,6 @@ import { GetToken } from '@/utils/token'
 import Edit from '@/views/User/UserOption/Edit/EditVue.vue'
 import History from '@/views/User/UserOption/History/HistoryVue.vue'
 import SmallFour from '@/views/User/UserOption/SmallFour/SmallFour.vue'
-import Fans from '@/views/User/UserOption/Fans/FansVue.vue'
 // import { User } from '@/api/index.js'
 export default {
   data () {
@@ -34,8 +33,7 @@ export default {
   components: {
     Edit,
     History,
-    SmallFour,
-    Fans
+    SmallFour
   }
 }
 </script>

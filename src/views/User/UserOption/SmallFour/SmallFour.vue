@@ -20,7 +20,7 @@
     <div class="inputbox">
       <div class="box">
         <van-field v-model="value" placeholder="说点什么....." @keyup.enter="SubmitEvent" />
-        <span @click="SubmitEvent">提交</span>
+        <span @click.prevent="SubmitEvent">提交</span>
       </div>
     </div>
   </div>
@@ -31,6 +31,7 @@ import { io } from 'socket.io-client'
 import { GetToken } from '@/utils/token'
 
 export default {
+  name: 'SmallFour',
   data () {
     return {
       value: '',

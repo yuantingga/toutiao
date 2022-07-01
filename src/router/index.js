@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { login, Token } from '@/api'
-import { GetToken, SetToken } from '@/utils/token'
+import { GetToken, RemoveToken, SetToken } from '@/utils/token'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 // 首页
@@ -73,6 +73,7 @@ const routes = [
     beforeEnter: (to, from, next) => {
       if (!GetToken('token')) {
         next()
+        // SetToken('path', JSON.stringify(to.path))
       }
     }
   },
@@ -92,25 +93,35 @@ const routes = [
   { path: '/Search/:value', component: SearchResult }
 
 ]
-
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location, onResolve, onReject) {
+  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
 })
+
 // 导航路由用于判断token的状态
 // 为空那么跳转到登陆页面
 // 如果是正确的那么就跳转到首页面
 // 如果是过期，那么在响应拦截器中继续无感知更新token
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
+  // 请求拦截器实现token没有或是token 401跳转到login页面
+  // 我们只需要解决tokne存在且要去往login页面的问题
   if (to.path !== '/login' && !GetToken('token')) {
-    // 这里是token被清空
+    // token为空，
     next('/login')
+    console.log(from.path)
+    SetToken('path', from.path)
   } else if (to.path === '/login' && GetToken('token') && GetToken('err') === 'true') {
-    // token是正确的，但是不能跳转到login页面
+    // 此时是不能跳转过去
     next('Index/Content')
   } else {
     next()
   }
 })
+
 export default router

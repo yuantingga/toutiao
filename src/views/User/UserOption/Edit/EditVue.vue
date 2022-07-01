@@ -4,7 +4,7 @@
       <!-- 使用 title 插槽来自定义标题 -->
       <template #default>
       <!-- 头像 ImgEvent头像点击显示文件表单 user.photo头像图片 -->
-        <van-image ref="img" round width="1.5rem" height="1.5rem" @click="ImgEvent" :src="user.photo" />
+        <van-image ref="img" round width="1.5rem" height="1.5rem" @click.prevent="ImgEvent" :src="user.photo" />
 
         <!-- 点击头像进行显示文件选择器，默认选择的是image类型的文件
         onFileChange
@@ -18,7 +18,7 @@
     </van-cell>
 
     <!-- name的单元格 -->
-    <van-cell :value="name" @click="show = true" is-link>
+    <van-cell :value="name" @click.prevent="show = true" is-link>
       <!-- 使用 title 插槽来自定义标题 -->
       <template #title>
         <span class="custom-title">名称</span>
@@ -26,7 +26,7 @@
     </van-cell>
 
     <!-- 生日的单元格 -->
-    <van-cell @click="show2 = true" :value="birthday" is-link>
+    <van-cell @click.prevent="show2 = true" :value="birthday" is-link>
       <!-- 使用 title 插槽来自定义标题 -->
       <template #title>
         <span class="custom-title">生日</span>
@@ -49,6 +49,7 @@
 import { UserData, Setphoto, UserAmend } from '@/api/index.js'
 import dayjs from 'dayjs'
 export default {
+  name: 'EditVue',
   data () {
     return {
       user: '',
@@ -75,6 +76,7 @@ export default {
     // 弹出的确认，修改name
     async DislogEvent () {
       this.name = this.value
+      this.$store.commit('SetUser', ['name', this.name])
       UserAmend({ name: this.name })
     },
 
@@ -102,6 +104,7 @@ export default {
       f.append('photo', e.target.files[0])
       Setphoto(f).then(value => {
         this.user.photo = value.data.photo
+        this.$store.commit('SetUser', ['photo', this.user.photo])
       })
     }
   },

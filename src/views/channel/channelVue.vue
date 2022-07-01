@@ -2,7 +2,7 @@
   <div class="channel">
       <van-nav-bar title="频道管理">
         <template #right>
-          <span class="iconfont icon-close" @touchstart.prevent="Back"></span>
+          <span class="iconfont icon-close" @click.prevent="Back"></span>
         </template>
       </van-nav-bar>
      <van-loading v-show="!show2" size="24px" color="#1989fa" style="margin-top:10px">加载中...</van-loading>
@@ -11,9 +11,9 @@
       <div class="text">
         <span>我的频道</span>
         <!-- channelEdit:点击进入频道|点击删除频道的切换 -->
-        <i @click="RemoveChannel">{{ channelEdit }}</i>
+        <i @click.prevent="RemoveChannel">{{ channelEdit }}</i>
         <!-- editText编辑|完成之间的切换 -->
-        <em @touchstart.prevent="edit">{{ editText }}</em>
+        <em @click.prevent="edit">{{ editText }}</em>
       </div>
 
       <!-- 用户的频道列表
@@ -21,13 +21,13 @@
         Zapping点击用户频道进行切换到首页的tab对应的频道上进行显示新闻信息列表
      -->
       <div class="ChannelSeparation">
-        <div v-for="(item, index) in List" :key="index" @touchstart.prevent="Zapping(item)">
+        <div v-for="(item, index) in List" :key="index" @click.prevent="Zapping(item)">
           {{ item.name }}
           <!-- 小叉号图标的显示与隐藏，点击编辑显示，点击完成隐藏
         removeEdit在用户频道中进行删除该频道
         在未添加的频道中进行添加该点击的频道
          -->
-          <span v-show="show" v-if="item.id != 0" class="iconfont icon-close" @touchstart.prevent="removeEdit(item)"></span>
+          <span v-show="show" v-if="item.id != 0" class="iconfont icon-close" @click.prevent="removeEdit(item)"></span>
         </div>
       </div>
       <!-- 下方未添加的频道列表 -->
@@ -38,7 +38,7 @@
       存储的是未添加的用户频道
       addChannel点击继续添加到用户频道中在原本频道中进行删除
      -->
-        <div v-for="item in List2" :key="item.id" @touchstart.prevent="addChannel(item)">
+        <div v-for="item in List2" :key="item.id" @click.prevent="addChannel(item)">
           {{ item.name }}
         </div>
       </div>
@@ -54,6 +54,7 @@ import { Toast } from 'vant'
 import { SetToken } from '@/utils/token'
 
 export default {
+  name: 'ChannelVue',
   data () {
     return {
       // 小叉号的点击显示与隐藏
@@ -126,7 +127,7 @@ export default {
         Toast.fail('修改失败')
         if (error.response.data.message === '游客不能设置个性化频道') {
           this.$router.push('/login')
-          SetToken('login', '/channel')
+          // SetToken('login', '/channel')
         }
       }
     },
@@ -149,7 +150,7 @@ export default {
         Toast.fail('修改失败')
         if (error.response.data.message === '游客不能设置个性化频道') {
           this.$router.push('/login')
-          SetToken('login', '/channel')
+          // SetToken('login', '/channel')
         }
       }
     },
@@ -184,7 +185,7 @@ export default {
         if (error.response.data.message === '游客不能设置个性化频道') {
           this.$router.push('/login')
           // 并将
-          SetToken('login', '/channel')
+          // SetToken('login', '/channel')
         }
       }
     },

@@ -17,7 +17,7 @@
 <script>
 import { login } from '@/api/index'
 import { Toast } from 'vant'
-import { SetToken } from '@/utils/token.js'
+import { GetToken, SetToken } from '@/utils/token.js'
 // import EventBus from '@/utils/eventBus'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -27,7 +27,8 @@ export default {
       username: '13888888888',
       password: '246810',
       Loading: false,
-      Disabled: false
+      Disabled: false,
+      one: true
     }
   },
   methods: {
@@ -43,10 +44,13 @@ export default {
         })
         SetToken('token', value.data.token)
         SetToken('refresh_token', value.data.refresh_token)
-        SetToken('login', '/Index/User')
         Toast.success('登陆成功')
-        // 跳转到个人用户界面
-        this.$router.push('/Index/User')
+        if (GetToken('path')) {
+          console.log(GetToken('path'))
+          this.$router.push(GetToken('path'))
+        } else {
+          this.$router.push('/Index/Content')
+        }
       }).catch(value => {
         console.log(value)
         Toast.fail('登陆失败')
