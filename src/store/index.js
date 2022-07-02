@@ -23,9 +23,19 @@ export default new Vuex.Store({
       photo: ''
     },
     // 搜索联想数组
-    Lenovo: ''
+    Lenovo: '',
+    RollOffset: '',
+    // 存储频道列表
+    UserChannels: ''
+
   },
   mutations: {
+    SetUserChannels (state, value) {
+      state.UserChannels = value
+    },
+    SetRollOffset (state, value) {
+      state.RollOffset = value
+    },
     SetLenovo (state, value) {
       state.Lenovo = value
     },

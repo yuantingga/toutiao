@@ -20,8 +20,8 @@
 </template>
 
 <script>
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 // eslint-disable-next-line no-unused-vars
-import { GetToken, RemoveToken } from '@/utils/token'
 export default {
 
   data () {
@@ -30,7 +30,7 @@ export default {
     }
   },
   activated () {
-    this.history = JSON.parse(GetToken('history'))
+    this.history = JSON.parse(GetStorage('history'))
   },
   methods: {
     // 历史记录的点击
@@ -43,7 +43,7 @@ export default {
     clear () {
       // 发送清空历史记录请求
       this.history = []
-      RemoveToken('history')
+      RemoveSetStorage('history')
       // 点击清空历史记录
     }
   }

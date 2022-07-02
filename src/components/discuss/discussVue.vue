@@ -4,7 +4,7 @@
         <div class="header">
           <div class="title">
             <div class="img">
-            <van-image :src="list.aut_photo"  height="100%" width="100%">
+            <van-image  v-lazy="list.aut_photo"  height="100%" width="100%">
               <template v-slot:error>加载失败</template>
             </van-image>
               <!-- <img :src="CommentInfo.aut_photo" alt="" /> -->

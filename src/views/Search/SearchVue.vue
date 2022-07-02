@@ -15,6 +15,7 @@
 
 <script>
 // eslint-disable-next-line no-unused-vars
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 import { GetToken, SetToken } from '@/utils/token'
 import SearchHistory from './SearchHistory/SearchHistory.vue'
 import SearchAssociate from './SearchAssociate/SearchAssociate.vue'
@@ -27,7 +28,7 @@ export default {
       // 搜索关键字
       value: '',
       obj: {},
-      history: JSON.parse(GetToken('history')) || [],
+      history: JSON.parse(GetStorage('history')) || [],
       ele: 'SearchHistory'
     }
   },
@@ -81,7 +82,7 @@ export default {
         this.history.push(value)
       }
       // 将this.history添加到本地缓存中，刷新搜索页面不会丢失历史记录
-      SetToken('history', JSON.stringify(this.history))
+      SetStorage('history', JSON.stringify(this.history))
       this.ele = 'SearchHistory'
       // 修改历史关键字,回车进行显示搜索结果组件并修改
       this.$store.commit('SetValue', this.value)

@@ -15,7 +15,6 @@
 <script>
 import EventBus from '@/utils/eventBus'
 import { GetToken, SetToken } from '@/utils/token'
-// import { GetToken } from '@/utils/token.js'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Index',

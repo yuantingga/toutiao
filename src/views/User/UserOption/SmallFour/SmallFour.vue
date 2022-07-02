@@ -1,6 +1,7 @@
 <template>
   <div class="shi">
     <div ref="dialog" class="dialog">
+      <lazy-component>
       <div class="robot">
         <van-image class="header" round  src="https://img01.yzcdn.cn/vant/cat.jpeg">
             <template v-slot:loading>
@@ -9,6 +10,7 @@
           </van-image>
         <div class="content">我是小思</div>
       </div>
+      </lazy-component>
       <div class="user"  v-for="(item, index) in user" :key="index">
         <div class="content">{{ item }}</div>
          <van-image round  class="header"  :src="photo">
@@ -29,7 +31,7 @@
 <script>
 import { io } from 'socket.io-client'
 import { GetToken } from '@/utils/token'
-
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 export default {
   name: 'SmallFour',
   data () {
@@ -39,7 +41,7 @@ export default {
       // 用户输入的信息
       user: ['我是用户'],
       socket: '',
-      photo: GetToken('photo')
+      photo: GetStorage('photo')
     }
   },
   async created () {

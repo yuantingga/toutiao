@@ -51,7 +51,7 @@
 
 import { UserChannels, AllChannels, PutChannel } from '@/api/index'
 import { Toast } from 'vant'
-import { SetToken } from '@/utils/token'
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 
 export default {
   name: 'ChannelVue',
@@ -107,7 +107,6 @@ export default {
   methods: {
     Back () {
       this.$router.push('/Index/Content')
-      location.reload()
     },
     // 点击删除频道的点击事件
     async RemoveChannel () {
@@ -140,6 +139,7 @@ export default {
             this.List.splice(index, 1)
           }
         })
+        this.$store.commit('SetUserChannels', this.List)
 
         PutChannel(this.List).then(value => {
           if (value.data.message === '游客不能设置个性化频道') {
@@ -175,8 +175,6 @@ export default {
             this.List2.splice(index, 1)
           }
         })
-        //
-        // eslint-disable-next-line no-unused-vars
         PutChannel(this.List)
       } catch (error) {
         // 如果不是游客问题一律弹窗修改失败
@@ -195,11 +193,6 @@ export default {
       if (this.add) return
       this.$router.push('/Index/Content')
       this.$store.commit('setTab', value.id)
-      /*
-      setTab (state, value) {
-        state.Tab = value
-      },
-      */
     }
   }
 }

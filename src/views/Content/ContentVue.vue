@@ -1,11 +1,11 @@
 <template>
-  <div class="content">
+  <div class="content" @scroll="Rolloffset" ref="content">
     <div class="Header">
       <van-nav-bar>
         <!-- 左侧logo -->
         <template #left>
           <div class="Headerleft">
-            <img src="../../assets/toutiao_logo.4653c8be.png" alt="" />
+          <img  src="../../assets/toutiao_logo.4653c8be.png" alt="" />
           </div>
         </template>
         <!-- 右侧搜索 -->
@@ -39,7 +39,7 @@
 
 <script>
 import { journalism, UserChannels } from '@/api/index'
-import { GetToken, SetToken } from '@/utils/token'
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 import MainVue from '@/components/Main/MainVue.vue'
 import EventBUS from '@/utils/eventBus'
 export default {
@@ -50,38 +50,47 @@ export default {
       // 获取tabs中的选项数据
       TabsList: '',
       // 保持tabs选项选中状态，如果获取不到本地缓存中的数据，那么就是使用0 作为默认值
-      TabsSelect: JSON.parse(GetToken('Tab')) || 0,
-      isLoading: ''
+      TabsSelect: JSON.parse(GetStorage('Tab')) || 0,
+      isLoading: '',
+      flag: false
     }
   },
-
-  // watch: {
-  //   // 监听tab属性中数据变化，从而将选中中的选项发送到本地缓存中进行保存
-  //   '$store.state.Tab': function (newVal) {
-  //     console.log(newVal);
-  //     SetToken('Tab', newVal)
-  //     this.TabsSelect = newVal
-  //   }
-  // },
-
+  watch: {
+    '$store.state.UserChannels': function (newval) {
+      console.log(newval)
+      this.TabsList = newval
+    }
+  },
   async created () {
     try {
       // 获取tabs中的选项数据
       UserChannels().then(value => {
         this.TabsList = value.data.channels
       })
-
-      // Router设置为/Index/Content说明是首页，Router用于区分是首页搜索页面还是历史页面中的数据
-      SetToken('Router', JSON.stringify('/Index/Content'))
+      SetStorage('Router', JSON.stringify('/Index/Content'))
     } catch (error) {}
   },
+  activated () {
+    this.$refs.content.scroll(0, this.$store.state.RollOffset)
+    console.log(this.$store.state.RollOffset)
+  },
   methods: {
+    // 滚动节流函数 flag:false
+    Rolloffset (e) {
+      if (this.flag === false) {
+        this.flag = setTimeout(() => {
+          this.$store.commit('SetRollOffset', e.target.scrollTop)
+          this.flag = false
+        }, 1000)
+      }
+    },
+
     // 搜索小图标的点击事件
     Search () {
       // 修改本地缓存中的Router属性，用于区分显示在首页，而mainVue中的数据需要进行改变
       // 从而重新渲染组件中的数据
       // 本地缓存修改Router
-      SetToken('Router', JSON.stringify('/Search'))
+      SetStorage('Router', JSON.stringify('/Search'))
       // 使用store属性进行设置存储的Router属性中的数据修改为/Search
       this.$store.commit('SetRouter', '/Search')
       // 跳转页面
@@ -89,7 +98,7 @@ export default {
     },
     Tabs (value) {
       console.log(value + '我是change事件')
-      SetToken('Tab', JSON.stringify(value))
+      SetStorage('Tab', JSON.stringify(value))
       this.$store.commit('SetTab', value)
       this.TabsSelect = value
     },

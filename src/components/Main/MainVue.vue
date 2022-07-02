@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-list v-model="loading" :finished="finished" offset="0"  finished-text="没有更多了" @load="onLoad">
+    <van-list  v-model="loading" :finished="finished" offset="5"  finished-text="没有更多了" @load="onLoad">
       <div class="list">
       <!--ArticleEvent点击单元格实现跳转到文章详情页面  -->
       <!-- 通过v-for进行遍历 -->
@@ -16,7 +16,7 @@
           <template #right-icon v-else-if="item.cover.type === 1">
             <div class="Cellright">
               <lazy-component>
-                <van-image :src="item.cover.images[0]">
+                <van-image v-lazy="item.cover.images[0]">
                   <template v-slot:default> </template>
                 </van-image>
               </lazy-component>
@@ -55,7 +55,7 @@ import { DisLike, report } from '@/api/index.js'
 import { Toast } from 'vant'
 import EventBUS from '@/utils/eventBus'
 // eslint-disable-next-line no-unused-vars
-import { GetToken, SetToken } from '@/utils/token'
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 
 export default {
   data () {
@@ -108,13 +108,13 @@ export default {
     '$store.state.Tab': async function (newval) {
       // 切换的tab，使用本地缓存进行获取如果存在那么就直接获取
       // 不存在那么就获取并进行本地缓存
-      if (JSON.parse(GetToken(`${newval}`))) {
-        this.list = JSON.parse(GetToken(`${newval}`))
+      if (JSON.parse(GetStorage(`${newval}`))) {
+        this.list = JSON.parse(GetStorage(`${newval}`))
       } else {
         this.$store.dispatch('glideEvent').then((value) => {
           this.list = value
 
-          SetToken(`${newval}`, JSON.stringify(value))
+          SetStorage(`${newval}`, JSON.stringify(value))
         }).catch(value => {
           console.log(value)
         })
@@ -126,9 +126,9 @@ export default {
     '$store.state.Route': async function (newVal) {
       console.log(newVal)
       // this.loading = false
-      if (newVal === '/Index/Content' && JSON.parse(GetToken(`${GetToken('Tab')}`))) {
+      if (newVal === '/Index/Content' && JSON.parse(GetStorage(`${GetStorage('Tab')}`))) {
         // 首页
-        this.list = JSON.parse(GetToken(`${GetToken('Tab')}`))
+        this.list = JSON.parse(GetStorage(`${GetStorage('Tab')}`))
       } else {
         this.loading = false
       }
@@ -137,13 +137,13 @@ export default {
     // 监听搜索关键字的变化，而导致组件渲染不同的数据
     '$store.state.value': function (newVal) {
       this.list = []
-      if (JSON.parse(GetToken(newVal))) {
-        this.list = JSON.parse(GetToken(newVal))
+      if (JSON.parse(GetStorage(newVal))) {
+        this.list = JSON.parse(GetStorage(newVal))
       } else {
         this.$store.dispatch('glideEvent').then((value) => {
           if (value.length > 0) {
             this.list = value
-            SetToken(newVal, JSON.stringify(value))
+            SetStorage(newVal, JSON.stringify(value))
           } else {
             this.finished = true
           }
@@ -153,10 +153,11 @@ export default {
 
   },
   methods: {
+
     // 跳转到文章详情页面
     ArticleEvent (item) {
       this.$router.push(`/article/${item.art_id}`)
-      SetToken('art_id', JSON.stringify(item.art_id))
+      SetStorage('art_id', JSON.stringify(item.art_id))
     },
     // 第二个面板点击返回显示第一个面板
     PanelCancel () {

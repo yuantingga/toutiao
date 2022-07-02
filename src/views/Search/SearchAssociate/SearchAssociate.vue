@@ -6,7 +6,7 @@
 
 <script>
 import eventBus from '@/utils/eventBus'
-import { GetToken, SetToken } from '@/utils/token'
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 export default {
   data () {
     return {
@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     SearchResult (item) {
-      let arr = JSON.parse(GetToken('history'))
+      let arr = JSON.parse(GetStorage('history'))
       if (!arr) {
         arr = []
         arr.push(item)
@@ -29,7 +29,7 @@ export default {
       }
 
       // 将this.history添加到本地缓存中，刷新搜索页面不会丢失历史记录
-      SetToken('history', JSON.stringify(arr))
+      SetStorage('history', JSON.stringify(arr))
       eventBus.$emit('LenoveClick')
       this.$store.commit('SetValue', item)
       this.$router.push(`/Search/${item}`)

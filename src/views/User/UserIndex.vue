@@ -36,9 +36,9 @@
 
 <script>
 
-import { SetToken, RemoveToken } from '@/utils/token'
+import { RemoveToken } from '@/utils/token'
 import { Dialog } from 'vant'
-
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 export default {
   data () {
     return {
@@ -80,18 +80,18 @@ export default {
     // 编辑
     Edit (event) {
       this.$router.push('/User/Edit')
-      SetToken('title', event.target.innerText)
+      SetStorage('title', event.target.innerText)
     },
     // 历史
     SetHistory (event) {
       this.$router.push('/User/History')
       this.$store.commit('SetRouter', '/User/History')
-      SetToken('title', event.target.innerText)
+      SetStorage('title', event.target.innerText)
     },
 
     SmallFour (event) {
       this.$router.push('/User/SmallFour')
-      SetToken('title', event.target.innerText)
+      SetStorage('title', event.target.innerText)
     }
   }
 }

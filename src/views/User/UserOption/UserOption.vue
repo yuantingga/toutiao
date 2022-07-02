@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { GetToken } from '@/utils/token'
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 import Edit from '@/views/User/UserOption/Edit/EditVue.vue'
 import History from '@/views/User/UserOption/History/HistoryVue.vue'
 import SmallFour from '@/views/User/UserOption/SmallFour/SmallFour.vue'
@@ -21,7 +21,7 @@ export default {
   },
   // title用于显示导航条底部的标题内容的文字
   activated () {
-    this.title = GetToken('title')
+    this.title = GetStorage('title')
   },
   methods: {
     // 点击返回到新闻界面

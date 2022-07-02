@@ -17,6 +17,7 @@
 <script>
 import { login } from '@/api/index'
 import { Toast } from 'vant'
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 import { GetToken, SetToken } from '@/utils/token.js'
 // import EventBus from '@/utils/eventBus'
 export default {
@@ -43,11 +44,11 @@ export default {
           forbidClick: true
         })
         SetToken('token', value.data.token)
-        SetToken('refresh_token', value.data.refresh_token)
+        SetStorage('refresh_token', value.data.refresh_token)
         Toast.success('登陆成功')
-        if (GetToken('path')) {
-          console.log(GetToken('path'))
-          this.$router.push(GetToken('path'))
+        if (GetStorage('path')) {
+          console.log(GetStorage('path'))
+          this.$router.push(GetStorage('path'))
         } else {
           this.$router.push('/Index/Content')
         }
@@ -55,7 +56,7 @@ export default {
         console.log(value)
         Toast.fail('登陆失败')
       })
-      SetToken('err', 'true')
+      SetStorage('err', 'true')
       // 设置token到本地缓存中
       setTimeout(() => {
         this.Loading = false

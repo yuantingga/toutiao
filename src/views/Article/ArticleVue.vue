@@ -32,11 +32,13 @@
 
       <van-divider />
       <!-- 中间内容 -->
-      <ArticleConten @click.prevent="contentEvent">
-        <template>
-          <div class="content" v-html="html"></div>
-        </template>
-      </ArticleConten>
+      <lazy-component>
+        <ArticleConten @click.prevent="contentEvent">
+          <template>
+            <div class="content" v-html="html"></div>
+          </template>
+        </ArticleConten>
+      </lazy-component>
       <!-- 分割线 -->
       <van-divider dashed>end</van-divider>
       <!-- 点赞部分 -->
@@ -51,8 +53,7 @@
       <!-- 底部导航，进行发布评论分享收藏等 -->
       <van-tabbar ref="tabbar">
         <div v-show="input === true">
-          <textarea placeholder="友善评论，理想发言，阳光心灵"
-          v-focus ref="textarea" name="" id="" cols="30" rows="10" ></textarea>
+          <textarea placeholder="友善评论，理想发言，阳光心灵" v-focus ref="textarea" name="" id="" cols="30" rows="10"></textarea>
           <span @click.prevent="addDiscuss">发送</span>
         </div>
         <div v-show="input === false">
@@ -86,7 +87,7 @@ import ArticleConten from '@/views/Article/ArticleConten.vue'
 import { GetArticle, GetComment, SendComments, attention, NotAttention, collects, NotCollects, SetLike, CancelLike } from '@/api/index.js'
 // import { Toast } from 'vant'
 import DiscussVue from '@/components/discuss/discussVue.vue'
-import { GetToken } from '@/utils/token'
+import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 
 export default {
   data () {
@@ -129,7 +130,7 @@ export default {
   },
   created () {
     // 获取评论信息
-    GetComment(JSON.parse(GetToken('art_id')))
+    GetComment(JSON.parse(GetStorage('art_id')))
       .then((value) => {
         if (value) {
           this.text = value.data.results
@@ -166,7 +167,7 @@ export default {
   // 组件激活
   async activated () {
     this.html = ''
-    GetArticle(JSON.parse(GetToken('art_id'))).then((value) => {
+    GetArticle(JSON.parse(GetStorage('art_id'))).then((value) => {
       if (value) {
         // 主体文本内容
         this.html = value.data.content
@@ -202,9 +203,9 @@ export default {
     },
     // 发送评论
     async addDiscuss () {
-      const target = JSON.parse(GetToken('art_id'))
+      const target = JSON.parse(GetStorage('art_id'))
       const content = this.$refs.textarea.value.trim()
-      const artid = JSON.parse(GetToken('art_id'))
+      const artid = JSON.parse(GetStorage('art_id'))
       if (content !== '') {
         SendComments({ target, content, artid }).then((value) => {
           this.text.unshift(value.data.new_obj)
@@ -227,9 +228,7 @@ export default {
       // 进行滚动的元素
       const article = document.querySelector('.article')
       // 滚动的终点:使用第一条
-      const destination = img.$el.offsetTop - height / 2
-      console.log(destination)
-      console.log(height)
+      const destination = img.$el.offsetTop + img.$el.offsetHeight
       if (img && destination > 0) {
         // 可视区域
         roll(article, 30, 100, destination)

@@ -10,9 +10,7 @@
 </template>
 
 <script>
-import { Token } from '@/api'
-import { GetToken, RemoveToken, SetToken } from '@/utils/token'
-import axios from '@/utils/require.js'
+
 export default {
   data () {
     return {
