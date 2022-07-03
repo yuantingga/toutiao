@@ -16,7 +16,7 @@
 
 <script>
 import { login } from '@/api/index'
-import { Toast } from 'vant'
+import { hiti } from '@/utils/hint'
 import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 import { GetToken, SetToken } from '@/utils/token.js'
 // import EventBus from '@/utils/eventBus'
@@ -39,13 +39,16 @@ export default {
       this.Loading = true
       this.Disabled = true
       login(values).then(value => {
-        Toast.loading({
-          message: '加载中...',
-          forbidClick: true
+        hiti({
+          type1: 'loading',
+          message1: '登陆成功'
         })
         SetToken('token', value.data.token)
         SetStorage('refresh_token', value.data.refresh_token)
-        Toast.success('登陆成功')
+        hiti({
+          type1: 'success',
+          message1: '登陆成功'
+        })
         if (GetStorage('path')) {
           console.log(GetStorage('path'))
           this.$router.push(GetStorage('path'))
@@ -54,7 +57,10 @@ export default {
         }
       }).catch(value => {
         console.log(value)
-        Toast.fail('登陆失败')
+        hiti({
+          type1: 'danger',
+          message1: '登陆失败'
+        })
       })
       SetStorage('err', 'true')
       // 设置token到本地缓存中

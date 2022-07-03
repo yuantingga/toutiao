@@ -50,7 +50,7 @@
 // eslint-disable-next-line no-unused-vars
 
 import { UserChannels, AllChannels, PutChannel } from '@/api/index'
-import { Toast } from 'vant'
+import { hiti } from '@/utils/hint'
 import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 
 export default {
@@ -123,7 +123,8 @@ export default {
           }
         })
       } catch (error) {
-        Toast.fail('修改失败')
+        hiti({ type1: 'danger', message1: '修改失败' })
+
         if (error.response.data.message === '游客不能设置个性化频道') {
           this.$router.push('/login')
           // SetToken('login', '/channel')
@@ -147,7 +148,7 @@ export default {
           }
         })
       } catch (error) {
-        Toast.fail('修改失败')
+        hiti({ type1: 'danger', message1: '修改失败' })
         if (error.response.data.message === '游客不能设置个性化频道') {
           this.$router.push('/login')
           // SetToken('login', '/channel')
@@ -178,7 +179,7 @@ export default {
         PutChannel(this.List)
       } catch (error) {
         // 如果不是游客问题一律弹窗修改失败
-        Toast.fail('修改失败')
+        hiti({ type1: 'danger', message1: '修改失败' })
         // 进行修改用户的频道，如果返回的是游客，那么就会跳转到用户界面
         if (error.response.data.message === '游客不能设置个性化频道') {
           this.$router.push('/login')

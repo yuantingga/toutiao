@@ -81,11 +81,11 @@
 
 <script>
 // import $ from 'jquery'
-import { Toast } from 'vant'
+import { hiti } from '@/utils/hint'
 import ArticleConten from '@/views/Article/ArticleConten.vue'
 // eslint-disable-next-line no-unused-vars
 import { GetArticle, GetComment, SendComments, attention, NotAttention, collects, NotCollects, SetLike, CancelLike } from '@/api/index.js'
-// import { Toast } from 'vant'
+
 import DiscussVue from '@/components/discuss/discussVue.vue'
 import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
 
@@ -136,9 +136,9 @@ export default {
           this.text = value.data.results
         } else {
           this.show2 = true
-          Toast.fail('加载失败')
+          hiti({ type1: 'danger', message1: '加载失败' })
           this.$router.back()
-          Toast.clear()
+          hiti.clear()
         }
       })
       .catch((value) => {
@@ -181,7 +181,7 @@ export default {
         this.show2 = true
       } else {
         this.show2 = true
-        Toast.fail('加载失败')
+        hiti({ type1: 'danger', message1: '加载失败' })
       }
     })
   },
@@ -213,7 +213,7 @@ export default {
         this.$refs.textarea.value = ''
         this.input = false
       } else {
-        Toast('文本为空')
+        hiti({ type1: 'html', message1: '文本为空' })
         this.$refs.textarea.value = ''
         this.input = false
       }

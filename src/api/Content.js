@@ -54,6 +54,7 @@ function report (obj) {
     console.log(error)
   }
 }
+
 export {
   journalism, GetTabs, DisLike, report
 }

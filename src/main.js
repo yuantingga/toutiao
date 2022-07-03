@@ -5,6 +5,7 @@ import store from './store'
 import '@/style/reset.css'
 import '@/plugins/index.js'
 import '@/utils/flexble.js'
+import axios from 'axios'
 
 Vue.config.productionTip = false
 Vue.directive('focue', { Inserted: function (e) { e.focus() } })
@@ -17,7 +18,12 @@ Vue.filter('descriptor', function (value) {
 
   return `${value.aut_name} ${value.comm_count} 评论 ${formattingDate(value.pubdate)}`
 })
-
+// 代理转发
+axios({
+  url: 'api/nc/article/headline/T1348647853363/0-40.html'
+}).then(value => {
+  console.log(value)
+})
 new Vue({
   router,
   store,

@@ -39,7 +39,7 @@
           </template>
           <!-- 小叉号 -->
           <template #extra>
-            <div class="clone" @click.prevent="Clone(item)">x</div>
+            <div class="clone" @click.prevent.stop="Clone(item)">x</div>
           </template>
         </van-cell>
       </div>
@@ -52,7 +52,7 @@
 <script>
 // DisLike 点击叉号的处理，进行设置不感兴趣新闻/举报新闻
 import { DisLike, report } from '@/api/index.js'
-import { Toast } from 'vant'
+import { hiti } from '@/utils/hint'
 import EventBUS from '@/utils/eventBus'
 // eslint-disable-next-line no-unused-vars
 import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
@@ -166,9 +166,9 @@ export default {
     // 举报面板进行发送请求进行举报
     async PanelSelect2 (value) {
       report({ target: this.textId, type: value.name }).then(value => {
-        Toast('举报成功')
+        hiti({ type1: 'success', message1: '反馈成功' })
       }).catch(value => {
-        Toast('举报失败')
+        hiti({ type1: 'danger', message1: '反馈失败' })
       })
     },
     // 第一个面板，点击的是不感兴趣进行发送请求
@@ -176,9 +176,9 @@ export default {
       console.log(value)
       if (value.name === '不感兴趣') {
         DisLike({ target: this.textId }).then(value => {
-          Toast('反馈成功')
+          hiti({ type1: 'success', message1: '反馈成功' })
         }).catch(value => {
-          Toast('反馈失败')
+          hiti({ type1: 'danger', message1: '反馈失败' })
         })
       } else {
         // 显示举报的面板
@@ -240,9 +240,13 @@ export default {
   .clone {
     position: absolute;
     bottom: -2px;
-    width: 0.53333rem;
+    height: 30px;
+    width: 30px;
     right: 8px;
+    display: flex;
+    justify-content: center;
     color: #ccc;
+
   }
 }
 

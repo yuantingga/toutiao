@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import { journalism, SearchResult, histories, User } from '@/api/index.js'
 // eslint-disable-next-line no-unused-vars
 import { GetToken, SetToken } from '@/utils/token'
-import { Toast } from 'vant'
+import { hiti } from '@/utils/hint'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -92,7 +92,7 @@ export default new Vuex.Store({
 
           return res
         } catch (error) {
-          Toast.fail('加载失败')
+          hiti({ type1: 'danger', message1: '加载失败' })
           return Error
         }
       } else if (context.state.Route === '/User/History') {
@@ -103,7 +103,7 @@ export default new Vuex.Store({
           })
           return res
         } catch (error) {
-          Toast.fail('加载失败')
+          hiti({ type1: 'danger', message1: '加载失败' })
           return Error
         }
       }
