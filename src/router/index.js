@@ -3,6 +3,8 @@ import { login, Token } from '@/api'
 import { GetToken, RemoveToken, SetToken } from '@/utils/token'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
+import NProgress from 'nprogress'
 // 首页
 const Index = () => import(/* webpackChunkName: "Index" */ '@/views/index/indexView.vue')
 
@@ -120,8 +122,11 @@ router.beforeEach((to, from, next) => {
     // 此时是不能跳转过去
     next('Index/Content')
   } else {
+    NProgress.start()
     next()
   }
 })
-
+router.afterEach(() => {
+  NProgress.done()
+})
 export default router

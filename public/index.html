@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="//at.alicdn.com/t/font_2761521_a6olv5j4hps.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script> 
-    
+    <% for(var css of htmlWebpackPlugin.options.cdn.css) { %>
+      <link rel="stylesheet" href="<%=css%>">
+      <% } %>
   </head>
   <body>
     <noscript>
@@ -19,4 +21,8 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+   <!-- 放置js-cdn文件 -->
+   <% for(var js of htmlWebpackPlugin.options.cdn.js) { %>
+    <script  src="<%=js%>" ></script>
+  <% } %>
 </html>
