@@ -5,7 +5,7 @@ import { GetToken } from '@/utils/token.js'
 function User () {
   try {
     return axioss({
-      url1: '/user'
+      url1: '/api/user'
 
     })
   } catch (error) {
@@ -16,7 +16,7 @@ function User () {
 function UserData () {
   try {
     return axioss({
-      url1: '/user/profile'
+      url1: '/api/user/profile'
 
     })
   } catch (error) {
@@ -27,7 +27,7 @@ function UserData () {
 function UserAmend (obj) {
   try {
     return axioss({
-      url1: '/user/profile',
+      url1: '/api/user/profile',
       method: 'PATCH',
       data: {
         ...obj
@@ -41,7 +41,7 @@ function UserAmend (obj) {
 function Setphoto (obj) {
   try {
     return axioss({
-      url1: '/user/photo',
+      url1: '/api/user/photo',
       method: 'PATCH',
       data: obj
 
@@ -54,7 +54,7 @@ function Setphoto (obj) {
 function histories () {
   try {
     return axioss({
-      url1: '/user/histories'
+      url1: '/api/user/histories'
 
     })
   } catch (error) {

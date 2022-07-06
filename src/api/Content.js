@@ -4,7 +4,7 @@ import { GetToken } from '@/utils/token.js'
 function journalism (obj) {
   try {
     return axioss({
-      url1: '/articles',
+      url1: '/api/articles',
 
       params: {
         ...obj
@@ -19,7 +19,7 @@ function journalism (obj) {
 function GetTabs () {
   try {
     return axioss({
-      url1: '/user/channels'
+      url1: '/api/user/channels'
 
     })
   } catch (error) {
@@ -31,7 +31,7 @@ function GetTabs () {
 function DisLike (obj) {
   try {
     return axioss({
-      url1: '/article/dislikes',
+      url1: '/api/article/dislikes',
 
       method: 'post',
       data: obj
@@ -45,7 +45,7 @@ function DisLike (obj) {
 function report (obj) {
   try {
     return axioss({
-      url1: '/article/dislikes',
+      url1: '/api/article/dislikes',
 
       method: 'post',
       data: obj
