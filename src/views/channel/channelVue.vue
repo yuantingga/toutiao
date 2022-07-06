@@ -27,7 +27,9 @@
         removeEdit在用户频道中进行删除该频道
         在未添加的频道中进行添加该点击的频道
          -->
-          <span v-show="show" v-if="item.id != 0" class="iconfont icon-close" @click.prevent="removeEdit(item)"></span>
+          <span v-show="show" v-if="item.id != 0" class="iconfont icon-close" @click.prevent="removeEdit(item)">
+            <van-icon name="cross" />
+          </span>
         </div>
       </div>
       <!-- 下方未添加的频道列表 -->

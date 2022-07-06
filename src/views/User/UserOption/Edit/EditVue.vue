@@ -76,8 +76,10 @@ export default {
     // 弹出的确认，修改name
     async DislogEvent () {
       this.name = this.value
-      this.$store.commit('SetUser', ['name', this.name])
-      UserAmend({ name: this.name })
+
+      UserAmend({ name: this.name }).then(value => {
+        this.$store.commit('SetName', this.value)
+      })
     },
 
     // 时间选择器的取消按钮，面板就行隐藏
@@ -104,7 +106,7 @@ export default {
       f.append('photo', e.target.files[0])
       Setphoto(f).then(value => {
         this.user.photo = value.data.photo
-        this.$store.commit('SetUser', ['photo', this.user.photo])
+        this.$store.commit('SetPhoto', value.data.photo)
       })
     }
   },

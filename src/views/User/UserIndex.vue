@@ -53,11 +53,13 @@ export default {
     })
   },
   watch: {
-    '$store.state.User.name': function (newval) {
+    '$store.state.name': function (newval) {
       console.log(newval)
+      this.user.name = newval
     },
-    '$store.state.User.photo': function (newval) {
+    '$store.state.photo': function (newval) {
       console.log(newval)
+      this.user.photo = newval
     }
   },
   methods: {
