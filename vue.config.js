@@ -25,12 +25,14 @@ if (!isDev) {
     'vue-lazyload': 'VueLazyload',
     bignumber: 'bignumber',
     vuex: 'Vuex',
-    nprogress: 'NProgress'
+    nprogress: 'NProgress',
+    'highlight.js': 'highlight.js'
   }
   cdn = {
 	  css: [
       'https://cdn.jsdelivr.net/npm/ant-design-vue@1.7.2/dist/antd.min.css', // 提前引入ant design vue样式
-      'https://cdn.bootcdn.net/ajax/libs/nprogress/0.2.0/nprogress.css'
+      'https://cdn.bootcdn.net/ajax/libs/nprogress/0.2.0/nprogress.css',
+      '//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css'
 	  ], // 放置css文件目录
 	  // eslint-disable-next-line no-tabs
 	  js: [
@@ -44,7 +46,8 @@ if (!isDev) {
       'https://cdn.bootcdn.net/ajax/libs/vue-lazyload/3.0.0-rc.2/vue-lazyload.js',
       'https://cdn.bootcdn.net/ajax/libs/bignumber.js/9.0.2/bignumber.js',
       'https://cdn.bootcdn.net/ajax/libs/vuex/2.4.1/vuex.js',
-      'https://cdn.bootcdn.net/ajax/libs/nprogress/0.2.0/nprogress.js'
+      'https://cdn.bootcdn.net/ajax/libs/nprogress/0.2.0/nprogress.js',
+      '//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js'
 	  ]// 放置js文件目录
   }
 }
@@ -63,7 +66,7 @@ module.exports = {
     })
   },
   // 优化访问css
-  publicPath: '/dist/',
+  publicPath: './',
   // 可以设置成相对路径，这样所有的资源都会被链接为相对路径，打出来的包可以被部署在任意路径
   outputDir: 'dist',
   // 打包时生成的生产环境构建文件的目录

@@ -8,8 +8,8 @@
     <meta name="referrer" content="no-referrer">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <link rel="stylesheet" href="//at.alicdn.com/t/font_2761521_a6olv5j4hps.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script> 
+  
+    <base href="./">
     <% for(var css of htmlWebpackPlugin.options.cdn.css) { %>
       <link rel="stylesheet" href="<%=css%>">
       <% } %>
