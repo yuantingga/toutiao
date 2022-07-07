@@ -61,6 +61,24 @@ function histories () {
     console.log(error)
   }
 }
+function DynamicApi (inn, num) {
+  return axioss({
+    url1: '/api/user/articles',
+    data: {
+      page: inn,
+      per_page: num
+    }
+  })
+}
+function notice (inn, num) {
+  return axioss({
+    url1: '/api/announcements',
+    data: {
+      page: inn,
+      per_page: num
+    }
+  })
+}
 export {
-  User, UserData, UserAmend, Setphoto, histories
+  User, UserData, UserAmend, Setphoto, histories, DynamicApi, notice
 }

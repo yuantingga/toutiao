@@ -18,6 +18,10 @@ Vue.filter('descriptor', function (value) {
 
   return `${value.aut_name} ${value.comm_count} 评论 ${formattingDate(value.pubdate)}`
 })
+Vue.filter('day', function (value) {
+  const d = new Date(value)
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDay()}`
+})
 // 代理转发
 axios({
   url: 'api/nc/article/headline/T1348647853363/0-40.html'

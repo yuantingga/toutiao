@@ -6,7 +6,7 @@
       <van-form @submit="onSubmit" ref="form">
         <van-field v-model="username"  name="mobile" placeholder="手机号" autocomplete="off"  :rules="rules.phone" />
         <div class="captcha">
-          <van-field v-model="password" type="password" name="code" placeholder="验证码"
+          <van-field v-model="password" name="code" placeholder="验证码"
           :rules="rules.note"> </van-field>
           <div class="add" @click="sendEvent">发送验证码</div>
         </div>
@@ -31,8 +31,8 @@ export default {
   name: 'Login',
   data () {
     return {
-      username: '14567654444',
-      password: '100232',
+      username: '13811111111',
+      password: '246810',
       Loading: false,
       Disabled: false,
       one: true,

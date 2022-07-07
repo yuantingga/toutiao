@@ -1,20 +1,6 @@
 <template>
   <div class="content" @scroll="Rolloffset" ref="content">
     <div class="Header">
-      <!-- <van-nav-bar>
-
-         <template #left>
-          <div class="Headerleft">
-          <img  src="../../assets/toutiao_logo.4653c8be.png" alt="" />
-          </div>
-        </template>
-
-        <template #right>
-          <span  @click="Search" style="color:white">
-            <van-icon name="search" />
-          </span>
-        </template>
-      </van-nav-bar> -->
 
       <div class="Tabs">
         <van-tabs v-model="TabsSelect" @change="Tabs" animated>

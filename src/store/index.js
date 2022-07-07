@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 // eslint-disable-next-line no-unused-vars
-import { journalism, SearchResult, histories, User } from '@/api/index.js'
+import { journalism, SearchResult, histories, User, DynamicApi } from '@/api/index.js'
+
 // eslint-disable-next-line no-unused-vars
 import { GetToken, SetToken } from '@/utils/token'
 import { hiti } from '@/utils/hint'
@@ -43,6 +44,7 @@ export default new Vuex.Store({
     },
     // 用于区分是首页还是搜索页面
     SetRouter (state, value) {
+      console.log(value)
       state.Route = value
     },
     SetTab (state, value) {
@@ -105,6 +107,12 @@ export default new Vuex.Store({
           hiti({ type1: 'danger', message1: '加载失败' })
           return Error
         }
+      } else if (context.state.Route === '/production') {
+        const res = DynamicApi(context.state.inn, 10).then(value => {
+          console.log(value.data.results)
+          return value.data.results
+        })
+        return res
       }
     },
     // 切换tab
