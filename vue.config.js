@@ -33,6 +33,7 @@ if (!isDev) {
       'https://cdn.jsdelivr.net/npm/ant-design-vue@1.7.2/dist/antd.min.css', // 提前引入ant design vue样式
       'https://cdn.bootcdn.net/ajax/libs/nprogress/0.2.0/nprogress.css',
       '//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css'
+
 	  ], // 放置css文件目录
 	  // eslint-disable-next-line no-tabs
 	  js: [
@@ -80,7 +81,7 @@ module.exports = {
     proxy: {
       // 这里监听一个别名，下面替换掉
       '/api': { // 这里最好有一个 /
-        target: 'http://c.m.163.com', // 后台接口域名
+        target: 'http://geek.itheima.net/v1_0', // 后台接口域名
         // ws: true, // 如果要代理 webSockets，配置这个参数
         // secure: false, // 如果是https接口，需要配置这个参数
         changeOrigin: true, // 是否跨域

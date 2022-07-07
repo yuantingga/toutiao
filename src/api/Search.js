@@ -4,7 +4,7 @@ import { GetToken } from '@/utils/token.js'
 function SearchResult (value) {
   try {
     return axioss({
-      url1: '/search',
+      url1: '/api/search',
       params: {
         ...value
       }
@@ -15,7 +15,7 @@ function SearchResult (value) {
 }
 function SearchLenovo (value) {
   return axioss({
-    url1: '/suggestion',
+    url1: '/api/suggestion',
     params: {
       q: value
     }
