@@ -1,9 +1,12 @@
 <template>
   <div class="Search">
     <div class="SearchHeader">
-      <span class="iconfont icon-zuo" @click.prevent="back"></span>
-      <van-search @keyup.prevent="AntiShake" @search="SearchKeyword" v-model="value" shape="round"
-       background="cornflowerblue" placeholder="请输入搜索关键词" />
+      <span class="iconfont icon-zuo" @click.prevent="back">
+        <van-icon name="arrow-left" />
+      </span>
+      <van-search  @keyup.prevent="AntiShake" @search="SearchKeyword"
+      v-model="value" shape="round"
+       background="white" placeholder="请输入搜索关键词" />
     </div>
     <!-- 搜索联想组件 -->
     <!-- 搜索历史组件 -->
@@ -66,7 +69,7 @@ export default {
           // } else {
           //   this.ele = 'SearchHistory'
           // }
-        }, 700)
+        }, 500)
       }
       antiShake()
     },
@@ -110,11 +113,11 @@ export default {
     position: relative;
     .icon-zuo {
       position: absolute;
-      top: 31%;
+      top: 25%;
       z-index: 10;
       font-size: 0.48rem;
       margin-left: 0.26667rem;
-      color: white;
+      color:black;
     }
     .van-search {
       padding-left: 40px;

@@ -40,5 +40,8 @@ export default {
   height: 100%;
   overflow: auto;
   padding-top:  1.22667rem;
+  .van-nav-bar .van-icon{
+    color: black !important;
+  }
 }
 </style>

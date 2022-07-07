@@ -1,6 +1,6 @@
 <template>
   <div class="channel">
-      <van-nav-bar title="频道管理">
+      <van-nav-bar>
         <template #right>
           <span class="iconfont icon-close" @click.prevent="Back"></span>
         </template>
@@ -28,7 +28,7 @@
         在未添加的频道中进行添加该点击的频道
          -->
           <span v-show="show" v-if="item.id != 0" class="iconfont icon-close" @click.prevent="removeEdit(item)">
-            <van-icon name="cross" />
+            <van-icon name="close" />
           </span>
         </div>
       </div>
@@ -50,10 +50,11 @@
 
 <script>
 // eslint-disable-next-line no-unused-vars
-
+import $ from 'jquery'
 import { UserChannels, AllChannels, PutChannel } from '@/api/index'
 import { hiti } from '@/utils/hint'
 import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
+import eventBus from '@/utils/eventBus'
 
 export default {
   name: 'ChannelVue',
@@ -75,16 +76,39 @@ export default {
       show2: false
     }
   },
+
   async created () {
     // 用户的频道列表
     try {
-      const res = await UserChannels()
+      const res = await UserChannels().then(value => {
+        console.log()
+        this.List = value.data.channels
+        eventBus.$emit('cut', this.List)
+        this.$nextTick(() => {
+          const index = JSON.parse(GetStorage('Tab'))
+          console.log(index)
+          // eslint-disable-next-line array-callback-return
+          value.data.channels.some((ele, inn) => {
+            console.log(ele.id)
+            if (ele.id === index) {
+              console.log(document.querySelectorAll('.ChannelSeparation div')[inn])
+
+              const div = [...document.querySelectorAll('.ChannelSeparation div')]
+              div.forEach(ele => {
+                ele.style.color = 'black'
+              })
+              document.querySelectorAll('.ChannelSeparation div')[inn].style.color = '#fc6627'
+            }
+          })
+        })
+        return value
+      })
       // 所有的频道列表
       const res2 = await AllChannels()
       this.show2 = true
 
       // 存储用户的频道列表
-      this.List = res.data.channels
+
       // 使用遍历进行判断所有频道列表中的频道是否有于用户的频道列表中相同的内容
       // 通过遍历 arr 存储的是用户的信息列表 进行遍历他，
       // 用户频道遍历一次就需要和所有频道列表都比较一次，发现相同的那么就使用splice方法进行删除
@@ -106,6 +130,7 @@ export default {
       console.log(error)
     }
   },
+
   methods: {
     Back () {
       this.$router.push('/Index/Content')
@@ -194,8 +219,9 @@ export default {
     Zapping (value) {
       // add为true 进行返回不能不能进行 ，显示小叉号时点击不能进行跳转
       if (this.add) return
+      console.log(1111)
       this.$router.push('/Index/Content')
-      this.$store.commit('setTab', value.id)
+      this.$store.commit('SetTab', value.id)
     }
   }
 }
@@ -205,6 +231,7 @@ export default {
 .channel {
   .van-loading{
     text-align: center;
+
   }
   .text {
     margin: 10px 5px;
@@ -235,9 +262,11 @@ export default {
       justify-content: center;
       align-items: center;
       position: relative;
+      border-radius: 20px;
+      font-size: 14px;
       .icon-close {
         position: absolute;
-        right: 0;
+        right: 5px;
         top: 0;
         color: rgb(207, 207, 207);
       }

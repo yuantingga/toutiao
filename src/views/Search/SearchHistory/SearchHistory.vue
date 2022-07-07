@@ -1,6 +1,6 @@
 <template>
   <!-- 搜索历史组件 -->
-   <div>
+  <div>
     <div class="text">
       <span>搜索历史</span>
       <!-- 清空历史记录 -->
@@ -11,19 +11,28 @@
         ></path>
       </svg>
     </div>
+    <van-cell-group>
+      <van-cell @click.prevent="HistoryEvent(item)" v-for="(item, index) in history" :key="index" :title="item">
+        <template #right-icon>
+          <van-icon name="cross" @click.prevent.stop="deleteEvent" />
+        </template>
+      </van-cell>
+    </van-cell-group>
     <!-- 历史记录的遍历绘制 -->
-    <div class="history">
+    <!-- <div class="history"> -->
     <!-- 历史记录的点击事件，进行跳转到搜索结果页面并将数据进行渲染 通过监听vuex中的value搜索关键字的变化-->
-      <div @click.prevent="HistoryEvent(item)"  v-for="(item, index) in history" :key="index">{{ item }}</div>
-    </div>
-   </div>
+
+    <!-- <div @click.prevent="HistoryEvent(item)" v-for="(item, index) in history" :key="index">{{ item }}</div> -->
+    <!-- </div> -->
+  </div>
 </template>
 
 <script>
+import $ from 'jquery'
 import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
+
 // eslint-disable-next-line no-unused-vars
 export default {
-
   data () {
     return {
       history: []
@@ -45,35 +54,47 @@ export default {
       this.history = []
       RemoveSetStorage('history')
       // 点击清空历史记录
+    },
+    deleteEvent (e) {
+      const text = $(e.target).siblings().eq(0).find('span').text()
+      const arr = JSON.parse(GetStorage('history'))
+      // eslint-disable-next-line array-callback-return
+      const aaa = arr.filter((value) => {
+        if (value !== text) {
+          return value
+        }
+      })
+      this.history = aaa
+      SetStorage('history', JSON.stringify(aaa))
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  .text {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 5px;
-    span {
-      font-size: 18px;
-    }
-    svg {
-      width: 20px;
-      height: 20px;
-    }
+.text {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 5px;
+  span {
+    font-size: 18px;
   }
-  .history {
-    display: flex;
-    div {
-      width: 60px;
-      height: 40px;
-      background: #efefef;
-      border-radius: 10px;
-      margin: 0 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  svg {
+    width: 20px;
+    height: 20px;
   }
+}
+.history {
+  display: flex;
+  div {
+    width: 60px;
+    height: 40px;
+    background: #efefef;
+    border-radius: 10px;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
 </style>

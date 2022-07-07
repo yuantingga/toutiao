@@ -1,6 +1,6 @@
 <template>
   <div class="UserOption">
-    <van-nav-bar :title="title"  left-arrow   @click-left.prevent="onClickLeft" />
+    <van-nav-bar :title="title"  left-arrow    @click-left.prevent="onClickLeft" />
    <keep-alive>
      <component :is="$route.params.id"></component>
    </keep-alive>
