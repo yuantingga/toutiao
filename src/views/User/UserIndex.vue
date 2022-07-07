@@ -142,7 +142,7 @@ export default {
         color: white;
       }
       .img {
-        width: 120px;
+
         height: 70px;
         display: flex;
         justify-content: center;

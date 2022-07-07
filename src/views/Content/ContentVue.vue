@@ -87,7 +87,13 @@ export default {
       EventBUS.$on('cut', value => {
         this.value = value
       })
+      SetStorage('Tab', 0)
     } catch (error) {}
+  },
+  activated () {
+    UserChannels().then((value) => {
+      this.TabsList = value.data.channels
+    })
   },
 
   methods: {

@@ -89,7 +89,6 @@ export default {
           console.log(index)
           // eslint-disable-next-line array-callback-return
           value.data.channels.some((ele, inn) => {
-            console.log(ele.id)
             if (ele.id === index) {
               console.log(document.querySelectorAll('.ChannelSeparation div')[inn])
 
@@ -203,7 +202,9 @@ export default {
             this.List2.splice(index, 1)
           }
         })
-        PutChannel(this.List)
+        PutChannel(this.List).then(value => {
+          console.log(value)
+        })
       } catch (error) {
         // 如果不是游客问题一律弹窗修改失败
         hiti({ type1: 'danger', message1: '修改失败' })
