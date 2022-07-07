@@ -21,6 +21,11 @@ function login ({ mobile, code }) {
     console.log(error)
   }
 }
+function SMS (mobile) {
+  return axioss({
+    url1: `/api/sms/codes/${mobile}`
+  })
+}
 export {
-  Token, login
+  Token, login, SMS
 }
