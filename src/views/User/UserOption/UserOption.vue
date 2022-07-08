@@ -15,7 +15,7 @@ import SmallFour from '@/views/User/UserOption/SmallFour/SmallFour.vue'
 import dynamic from '@/views/User/UserOption/Dynamic/dynamicVue.vue'
 import collect from '@/views/User/UserOption/Collect/CollectVue.vue'
 import attention from '@/views/User/UserOption/Attention/AttentionVue.vue'
-import fans from '@/views/User/UserOption/fans/FansVue.vue'
+
 import Information from '@/views/User/UserOption/Information/InformationVue.vue'
 import showreel from '@/views/User/UserOption/Showreel/ShowreelVue.vue'
 import feedback from '@/views/User/UserOption/feedback/feedbackVue.vue'
@@ -48,7 +48,6 @@ export default {
     dynamic,
     collect,
     attention,
-    fans,
     Information,
     showreel,
     feedback

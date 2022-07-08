@@ -26,7 +26,7 @@
         </template>
       </van-cell>
       <!-- name的单元格 -->
-      <van-cell :value="user.intro" is-link>
+      <van-cell :value="$store.state.intro" @click="show4 = true" is-link>
         <!-- 使用 title 插槽来自定义标题 -->
         <template #title>
           <span class="custom-title">简介</span>
@@ -34,7 +34,7 @@
       </van-cell>
     </div>
     <div class="two">
-      <van-cell :value="user.gender===0 ? '男' :'女'" @click="show3 = true" is-link>
+      <van-cell :value="six" @click="show3 = true" is-link>
         <!-- 使用 title 插槽来自定义标题 -->
         <template #title>
           <span class="custom-title">性别</span>
@@ -49,15 +49,21 @@
     </div>
     <!--生日的 时间选择器 -->
     <van-action-sheet v-model="show2">
-      <van-datetime-picker v-model="currentDate" type="date"
-       title="选择年月日" :min-date="minDate" :max-date="maxDate" @confirm="affirm" @cancel="cancelEvent" />
+      <van-datetime-picker v-model="currentDate" type="date" title="选择年月日" :min-date="minDate" :max-date="maxDate" @confirm="affirm" @cancel="cancelEvent" />
     </van-action-sheet>
 
     <!-- name修改的弹窗 -->
     <van-dialog v-model="show" @confirm="DislogEvent" title="修改name" show-cancel-button>
       <van-field placeholder="请输入名称" style="width: 200px; text-align: center" v-model="value" />
     </van-dialog>
-    <van-action-sheet v-model="show3" :actions="actions" cancel-text="取消" @select="SixEvent" close-on-click-action @cancel="onCancel" />
+
+    <van-action-sheet v-model="show3" :actions="actions"
+    cancel-text="取消" @select="SixEvent" close-on-click-action @cancel="onCancel" />
+    <van-popup v-model="show4" position="right" :style="{ height: '100%', width: '100%' }">
+      <van-nav-bar title="简介" right-text="提交" left-arrow @click-left="show4 = false" @click-right="onClickRight" />
+      <textarea @input="TextareaInput" v-model="textvalue" name="" id="" cols="30" rows="10" minlength="0" maxlength="100" placeholder="请输入简介"></textarea>
+      <span class="num">0/100</span>
+    </van-popup>
   </div>
 </template>
 
@@ -66,6 +72,7 @@
 import { UserData, Setphoto, UserAmend } from '@/api/index.js'
 import { Toast } from 'vant'
 import dayjs from 'dayjs'
+import $ from 'jquery'
 export default {
   name: 'EditVue',
   data () {
@@ -91,14 +98,31 @@ export default {
       six: '',
       text: '简介内容',
       show3: false,
-      actions: [{ name: '男' }, { name: '女' }]
+      actions: [{ name: '男' }, { name: '女' }],
+      show4: false,
+      textvalue: '',
+      obj: {}
     }
   },
   methods: {
+    TextareaInput (e) {
+      $('.num')[0].innerHTML = e.target.value.length + '/100'
+    },
+    onClickRight () {
+      const text = this.textvalue.trim()
+      if (text) {
+        UserAmend({ intro: text }).then(value => {
+          this.show4 = false
+          this.$store.commit('Setintro', text)
+        })
+      }
+    },
     async SixEvent (value) {
       this.six = value.name
+      const val = value.name === '男' ? 0 : 1
+
       const obj = {
-        gender: value.name
+        gender: val
       }
       const { data: res } = await UserAmend(obj)
       console.log(res)
@@ -148,11 +172,13 @@ export default {
   async created () {
     UserData()
       .then((value) => {
-        console.log(value)
         this.user = value.data
         this.value = value.data.name
         this.birthday = value.data.birthday
         this.name = value.data.name
+        this.six = value.data.gender === 0 ? '男' : '女'
+        this.$store.commit('Setintro', value.data.intro)
+        this.textvalue = value.data.intro
       })
       .catch((value) => {
         //
@@ -167,6 +193,31 @@ export default {
 <style lang="less" scoped>
 .edit {
   background: #f8f8f8;
+  box-sizing: border-box;
+  /deep/ .van-nav-bar__right {
+    .van-nav-bar__text {
+      color: #fc6627;
+    }
+  }
+  textarea {
+    resize: none;
+    height: 100px;
+    width: 95%;
+    background: #f8f8f8;
+    margin: 10px 10px;
+    border: none;
+    border-radius: 5px;
+    padding: 20px 10px;
+    padding-top: 10px;
+    font-size: 15px;
+  }
+  .num {
+    position: absolute;
+    top: 135px;
+    right: 21px;
+    font-size: 15px;
+    color: #ccc;
+  }
   .two {
     margin-top: 20px;
   }

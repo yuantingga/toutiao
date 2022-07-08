@@ -21,11 +21,11 @@
           <div>{{ user.art_count }}</div>
           <div>动态</div>
         </div>
-        <div @click="redirect('attention','关注')">
+        <div @click="redirect('attention','关注/粉丝')">
           <div>{{ user.follow_count }}</div>
           <div>关注</div>
         </div>
-        <div @click="redirect('fans','粉丝')">
+        <div @click="redirect('attention','关注/粉丝')">
           <div>{{ user.fans_count }}</div>
           <div>粉丝</div>
           <!--@click.prevent="FansEvent"-->

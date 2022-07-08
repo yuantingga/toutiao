@@ -1,10 +1,11 @@
 <template>
   <div>
-    <van-list  v-model="loading" :finished="finished" offset="5"  finished-text="没有更多了" @load="onLoad">
+    <van-empty v-if="show3" description="暂无数据" />
+    <van-list   v-model="loading" :finished="finished" offset="5"  :finished-text="text" @load="onLoad">
       <div class="list">
       <!--ArticleEvent点击单元格实现跳转到文章详情页面  -->
       <!-- 通过v-for进行遍历 -->
-        <van-cell @click.prevent="ArticleEvent(item)" v-for="(item, index) in list" :key="index" :title="item.title">
+        <van-cell  @click.prevent="ArticleEvent(item)" v-for="(item, index) in list" :key="index" :title="item.title">
           <!-- 图片只有一张时 -->
           <template #label v-if="item.cover.type === 0">
             <div class="CellLabel0">
@@ -68,12 +69,14 @@ export default {
       loading: false,
       // 数据还没有加载完成
       finished: false,
-
+      // 加载到最后的显示文本
+      text: '没有更多了',
       // 获取contentVue组件中tabs选项卡选中的选项
       stope: this.$store.state.Tab,
       // 面板的显示于隐藏
       show: false,
       show2: false,
+      show3: false,
       // 面板点击的选项id
       textId: '',
       // 面板显示内容
@@ -106,20 +109,16 @@ export default {
     // 监听tab数据的变化
     // 在第一次渲染中或是下拉将数据进行获取到保存下来
     '$store.state.Tab': async function (newval) {
-      // 切换的tab，使用本地缓存进行获取如果存在那么就直接获取
-      // 不存在那么就获取并进行本地缓存
-      if (JSON.parse(GetStorage(`${newval}`))) {
-        this.list = JSON.parse(GetStorage(`${newval}`))
+      if (GetStorage(newval)) {
+        this.list = JSON.parse(GetStorage(newval))
       } else {
+        // 本地缓存下来
         this.$store.dispatch('glideEvent').then((value) => {
-          this.list = value
-
-          SetStorage(`${newval}`, JSON.stringify(value))
-        }).catch(value => {
           console.log(value)
+          this.list = value.results
+          SetStorage(newval, JSON.stringify(value.results))
         })
       }
-      // 切换发送请求
     },
 
     // 用于区分首页，搜索页面，历史界面
@@ -141,9 +140,9 @@ export default {
         this.list = JSON.parse(GetStorage(newVal))
       } else {
         this.$store.dispatch('glideEvent').then((value) => {
-          if (value.length > 0) {
+          if (value.results.length > 0) {
             this.list = value
-            SetStorage(newVal, JSON.stringify(value))
+            SetStorage(newVal, JSON.stringify(value.results))
           } else {
             this.finished = true
           }
@@ -200,14 +199,21 @@ export default {
         this.$store.dispatch('glideEvent').then((value) => {
           console.log(value)
           // 如果获取的是一个空数组那么
-          if (value.length === 0) {
+          if (value.results.length === 0) {
             this.finished = true
+            this.show3 = true
+            this.text = ''
             return ''
           }
-          value.forEach(element => {
+          value.results.forEach(element => {
             this.list.push(element)
           })
           this.loading = false
+          if (!value.total_count) return
+          console.log(value.total_count)
+          if (this.list.length >= value.total_count) {
+            this.finished = true
+          }
         }).catch((value) => {
           this.list = []
           this.finished = true

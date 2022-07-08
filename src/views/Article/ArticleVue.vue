@@ -1,7 +1,7 @@
 <template>
   <div class="article">
     <!-- 文章详情的头部 点击小图标进行返回 -->
-    <van-nav-bar title="文章详情" left-arrow @click-left="$router.replace('/Index/Content')" />
+    <van-nav-bar title="文章详情" left-arrow @click-left="$router.back()" />
     <!-- 加载组件的显示，等请求数据成功后才显示list组件的内容，
     当组件被缓存将show2设置为false那么点击每一个组件都会重新显示加载修改等待请求数据成功-->
     <van-loading v-show="!show2" size="24px" color="#1989fa" style="margin-top: 10px">加载中...</van-loading>
@@ -279,9 +279,14 @@ export default {
     // 关注于取消关注点击事件
     attentionEvent () {
       this.attention = !this.attention
-      console.log(this.attention)
       if (this.attention) {
-        attention(this.user.aut_id)
+        attention(this.user.aut_id).then(value => {
+          console.log(value)
+          if (value === undefined) {
+            this.attention = false
+            hiti({ type1: 'html', message1: '自己不能关注自己' })
+          }
+        })
       } else {
         NotAttention(this.user.aut_id)
       }

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 // eslint-disable-next-line no-unused-vars
-import { journalism, SearchResult, histories, User, DynamicApi } from '@/api/index.js'
+import { journalism, SearchResult, histories, User, DynamicApi, collectsList } from '@/api/index.js'
 
 // eslint-disable-next-line no-unused-vars
 import { GetToken, SetToken } from '@/utils/token'
@@ -25,10 +25,15 @@ export default new Vuex.Store({
     Lenovo: '',
     RollOffset: '',
     // 存储频道列表
-    UserChannels: ''
+    UserChannels: '',
+    // 简介
+    intro: ''
 
   },
   mutations: {
+    Setintro (state, value) {
+      state.intro = value
+    },
     SetUserChannels (state, value) {
       state.UserChannels = value
     },
@@ -44,7 +49,7 @@ export default new Vuex.Store({
     },
     // 用于区分是首页还是搜索页面
     SetRouter (state, value) {
-      console.log(value)
+      state.inn = 0
       state.Route = value
     },
     SetTab (state, value) {
@@ -79,16 +84,17 @@ export default new Vuex.Store({
         // 判断是首页
 
         const res = journalism({ channel_id: context.state.Tab, timestamp: Date.now() }).then(value => {
-          return value.data.results
+          return value.data
         }).catch()
         return res
       } else if (context.state.Route === '/Search') {
         // 判断是搜索页面
         try {
+          console.log(context.state.inn)
           const value = context.state.value
-          const res = SearchResult({ q: value, page: context.state.inn }).then(value => {
+          const res = SearchResult({ q: value }).then(value => {
             context.state.inn++
-            return value.data.results
+            return value.data
           }).catch()
 
           return res
@@ -100,8 +106,9 @@ export default new Vuex.Store({
         // 历史记录页面
         try {
           const res = histories({ page: context.state.inn, per_page: 20 }).then(value => {
-            return value.data.results
+            return value.data
           })
+          context.state.inn++
           return res
         } catch (error) {
           hiti({ type1: 'danger', message1: '加载失败' })
@@ -109,8 +116,13 @@ export default new Vuex.Store({
         }
       } else if (context.state.Route === '/production') {
         const res = DynamicApi(context.state.inn, 10).then(value => {
-          console.log(value.data.results)
-          return value.data.results
+          return value.data
+        })
+        return res
+      } else if (context.state.Route === '/collectsList') {
+        // 收藏
+        const res = collectsList(1, 10).then(value => {
+          return value.data
         })
         return res
       }

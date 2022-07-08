@@ -1,7 +1,16 @@
 <template>
   <div class="content" @scroll="Rolloffset" ref="content">
     <div class="Header">
-
+      <van-nav-bar>
+        <template #left>
+          <div class="Headerleft">
+            <img src="../../assets/toutiao_logo.4653c8be.png" alt="" />
+          </div>
+        </template>
+        <template #right>
+          <van-icon name="plus" />
+        </template>
+      </van-nav-bar>
       <div class="Tabs">
         <van-tabs v-model="TabsSelect" @change="Tabs" animated>
           <!--
@@ -27,9 +36,9 @@
       </van-pull-refresh>
     </div>
     <van-popup @opened="OpenEvent" v-model="show" closeable close-icon="close" position="left" :style="{ height: '100%', width: '100%' }">
-     <keep-alive>
-       <ChannelVue></ChannelVue>
-     </keep-alive>
+      <keep-alive>
+        <ChannelVue></ChannelVue>
+      </keep-alive>
     </van-popup>
   </div>
 </template>
@@ -70,7 +79,7 @@ export default {
         this.TabsList = value.data.channels
       })
       SetStorage('Router', JSON.stringify('/Index/Content'))
-      EventBUS.$on('cut', value => {
+      EventBUS.$on('cut', (value) => {
         this.value = value
       })
       SetStorage('Tab', 0)
@@ -93,7 +102,7 @@ export default {
         this.value.some((ele, inn) => {
           if (ele.id === index) {
             const div = [...document.querySelectorAll('.ChannelSeparation div')]
-            div.forEach(ele => {
+            div.forEach((ele) => {
               ele.style.color = 'black'
             })
             document.querySelectorAll('.ChannelSeparation div')[inn].style.color = '#fc6627'
@@ -165,6 +174,7 @@ export default {
     top: 0;
     width: 100%;
     z-index: 10;
+
     .Tabs {
       position: relative;
       padding-right: 30px;

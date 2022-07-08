@@ -12,7 +12,8 @@
         </div>
 
         <div style="margin: 16px">
-          <van-button round block type="info" :disabled="Disabled" :loading="Loading" loading-text="加载中..." native-type="submit">提交</van-button>
+          <van-button round block type="info" :disabled="Disabled" :loading="Loading"
+          loading-text="加载中..." native-type="submit">提交</van-button>
         </div>
       </van-form>
     </div>
@@ -91,6 +92,8 @@ export default {
             type1: 'success',
             message1: '登陆成功'
           })
+          this.Loading = false
+          this.Disabled = false
           if (GetStorage('path')) {
             console.log(GetStorage('path'))
             this.$router.push(GetStorage('path'))
@@ -107,10 +110,6 @@ export default {
         })
       SetStorage('err', 'true')
       // 设置token到本地缓存中
-      setTimeout(() => {
-        this.Loading = false
-        this.Disabled = false
-      }, 1000)
     },
     sendEvent (e) {
       const rex = /^1[3456789]\d{9}$/

@@ -79,6 +79,31 @@ function notice (inn, num) {
     }
   })
 }
+function Followings (inn, num) {
+  return axioss({
+    url1: '/api/user/followings',
+    params: {
+      page: inn,
+      per_page: num
+    }
+  })
+}
+
+function followers (inn, num) {
+  return axioss({
+    url1: '/api/user/followers',
+    params: {
+      page: inn,
+      per_page: num
+    }
+  })
+}
+function FigureApi () {
+  return axioss({
+    url1: '/api/user/figure'
+  })
+}
+
 export {
-  User, UserData, UserAmend, Setphoto, histories, DynamicApi, notice
+  User, UserData, UserAmend, Setphoto, histories, DynamicApi, notice, Followings, followers, FigureApi
 }

@@ -90,12 +90,22 @@ function collects (id) {
     headers: {
       Authorization: `Bearer ${GetToken('token')}`
     },
+    method: 'post',
     data: {
       target: id
     }
   })
 }
 
+function collectsList (inn, num) {
+  return axioss({
+    url1: '/api/article/collections',
+    params: {
+      page: inn,
+      per_page: num
+    }
+  })
+}
 // 取消收藏
 function NotCollects (id) {
   return axioss({
@@ -131,5 +141,5 @@ function CancelLike (id) {
 }
 export {
   CancelLike, SetLike, NotCollects, collects, removeLove, addLove, NotAttention, attention, SendComments, GetComment
-  , GetArticle
+  , GetArticle, collectsList
 }
