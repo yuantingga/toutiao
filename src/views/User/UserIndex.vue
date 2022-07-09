@@ -104,7 +104,7 @@
       <div class="panel2">
         <h1>更多服务</h1>
         <div class="content">
-          <div @click="redirect('feedback','用户反馈')">
+          <div @click="redirect('feedback','意见反馈')">
             <div class="van-icon">
               <svg t="1657185982800" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5281" width="200" height="200">
                 <path

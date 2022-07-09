@@ -103,7 +103,17 @@ function FigureApi () {
     url1: '/api/user/figure'
   })
 }
+function notifyApi (inn, num, type1) {
+  return axioss({
+    url1: '/api/user/notify',
+    params: {
+      page: inn,
+      per_page: num,
+      type: type1
+    }
+  })
+}
 
 export {
-  User, UserData, UserAmend, Setphoto, histories, DynamicApi, notice, Followings, followers, FigureApi
+  User, UserData, UserAmend, Setphoto, histories, DynamicApi, notice, Followings, followers, FigureApi, notifyApi
 }

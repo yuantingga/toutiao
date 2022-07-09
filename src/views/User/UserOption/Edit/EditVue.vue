@@ -57,13 +57,18 @@
       <van-field placeholder="请输入名称" style="width: 200px; text-align: center" v-model="value" />
     </van-dialog>
 
-    <van-action-sheet v-model="show3" :actions="actions"
-    cancel-text="取消" @select="SixEvent" close-on-click-action @cancel="onCancel" />
-    <van-popup v-model="show4" position="right" :style="{ height: '100%', width: '100%' }">
+    <van-action-sheet v-model="show3" :actions="actions" cancel-text="取消" @select="SixEvent" close-on-click-action @cancel="onCancel" />
+    <!-- <van-popup v-model="show4" position="right" :style="{ height: '100%', width: '100%' }">
       <van-nav-bar title="简介" right-text="提交" left-arrow @click-left="show4 = false" @click-right="onClickRight" />
-      <textarea @input="TextareaInput" v-model="textvalue" name="" id="" cols="30" rows="10" minlength="0" maxlength="100" placeholder="请输入简介"></textarea>
-      <span class="num">0/100</span>
-    </van-popup>
+
+    </van-popup> -->
+    <TextareaVue :show="show4" :fun="onClickRight" position="right" rightText="提交" title="编辑简介" >
+      <template #html>
+
+        <textarea @input="TextareaInput" v-model="textvalue" name="" id="" cols="30" rows="10" minlength="0" maxlength="100" placeholder="请输入简介"></textarea>
+        <span class="num">0/100</span>
+      </template>
+    </TextareaVue>
   </div>
 </template>
 
@@ -73,6 +78,8 @@ import { UserData, Setphoto, UserAmend } from '@/api/index.js'
 import { Toast } from 'vant'
 import dayjs from 'dayjs'
 import $ from 'jquery'
+import { hiti } from '@/utils/hint'
+import TextareaVue from '@/components/textarea/TextareaVue.vue'
 export default {
   name: 'EditVue',
   data () {
@@ -111,10 +118,13 @@ export default {
     onClickRight () {
       const text = this.textvalue.trim()
       if (text) {
-        UserAmend({ intro: text }).then(value => {
+        UserAmend({ intro: text }).then((value) => {
           this.show4 = false
           this.$store.commit('Setintro', text)
+          hiti({ type1: 'success', message1: '提交成功' })
         })
+      } else {
+        hiti({ type1: 'fail', message1: '提交内容不能为空！' })
       }
     },
     async SixEvent (value) {
@@ -186,6 +196,9 @@ export default {
 
         // console.log(value)
       })
+  },
+  components: {
+    TextareaVue
   }
 }
 </script>
