@@ -156,6 +156,7 @@ export default {
     // 跳转到文章详情页面
     ArticleEvent (item) {
       this.$router.push(`/article/${item.art_id}`)
+      console.log(item.art_id)
       SetStorage('art_id', JSON.stringify(item.art_id))
     },
     // 第二个面板点击返回显示第一个面板

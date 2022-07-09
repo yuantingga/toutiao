@@ -60,4 +60,8 @@ export default {
   width: 100%;
   overflow: auto;
 }
+.van-nav-bar{
+  position: sticky;
+    top: 0;
+}
 </style>

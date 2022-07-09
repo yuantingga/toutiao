@@ -144,7 +144,7 @@ export default {
       setTimeout(async () => {
         try {
           // 下拉刷新，获取新闻表格的数据，通过eventBus传递给传递给mainvue组件进行重新加载数据
-          journalism({ channel_id: this.$store.state.Tab, timestamp: Date.now() + 1 }).then((Value) => {
+          journalism({ channel_id: this.$store.state.Tab, timestamp: Date.now() + 1, with_top: 1 }).then((Value) => {
             EventBUS.$emit('refresh', Value.data.results)
             // 设置为false代表加载完成，没有处于加载状态
             this.isLoading = false

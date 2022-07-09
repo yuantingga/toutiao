@@ -1,6 +1,5 @@
 <template>
-  <div>
-
+  <div class="ArticleContent">
     <slot></slot>
   </div>
 </template>
@@ -12,6 +11,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.ArticleContent{
+  width: 100%;
+  overflow: hidden;
+  background-color: white;
+}
 /deep/ .content {
   font-size: 0.32rem;
   line-height: 0.64rem;

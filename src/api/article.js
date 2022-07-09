@@ -11,6 +11,7 @@ function GetArticle (str) {
 }
 // 获取评论信息
 function GetComment (id) {
+  console.log(id)
   return axioss({
     url1: '/api/comments',
     params: {

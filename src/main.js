@@ -12,11 +12,26 @@ Vue.directive('focue', { Inserted: function (e) { e.focus() } })
 Vue.filter('descriptor', function (value) {
   function formattingDate (value) {
     const d = Date.now() / 1000 - new Date(value).getTime() / 1000
-    const dd = d / 60 / 60 / 24 / 365 > 0 ? parseInt(d / 60 / 60 / 24 / 365) + '年前' : parseInt(d / 60 / 60 / 24 / 12) + '月前'
-    return dd
+
+    const dd = parseInt(d / 60 / 60 / 24 / 365)
+
+    if (dd > 0) {
+      return parseInt(d / 60 / 60 / 24 / 365) + '年前'
+    } else if (dd <= 0) {
+      return parseInt(d / 60 / 60 / 24 / 12) + '月前'
+    }
   }
 
   return `${value.aut_name} ${value.comm_count} 评论 ${formattingDate(value.pubdate)}`
+})
+Vue.filter('countDown', function (value) {
+  const d = Date.now() / 1000 - new Date(value).getTime() / 1000
+  const dd = parseInt(d / 60 / 60)
+  if (dd > 0) {
+    return parseInt(d / 60 / 60) + '时前'
+  } else {
+    return parseInt(d / 60 / 60) + '时前'
+  }
 })
 Vue.filter('day', function (value) {
   const d = new Date(value)

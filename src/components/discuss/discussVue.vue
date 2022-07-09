@@ -4,7 +4,7 @@
         <div class="header">
           <div class="title">
             <div class="img">
-            <van-image  v-lazy="list.aut_photo"  height="100%" width="100%">
+            <van-image  :src="list.aut_photo"  height="100%" width="100%">
               <template v-slot:error>加载失败</template>
             </van-image>
               <!-- <img :src="CommentInfo.aut_photo" alt="" /> -->
@@ -18,9 +18,13 @@
         </div>
         <div class="content">
         <!-- 评论的文本 -->
-          <span>{{list.content}}</span>
+          <span style="color:rgb(102, 102, 102);font-size:16px">{{list.content}}</span>
           <!-- 评论的时间 -->
-          <span>{{list.pubdate}}</span>
+
+        </div>
+        <div class="reply">
+             <div>回复<van-icon name="arrow" /></div>
+            <span>{{list.pubdate | countDown}}</span>
         </div>
 
       </div>
@@ -105,6 +109,23 @@ export default {
     .reply{
         padding-left: 46px;
         margin-top: 5px;
+        display: flex;
+        align-items: center;
+        span{
+          font-size: 14px;
+          color: #ccc;
+          margin-left: 5px;
+        }
+        /deep/div{
+          width: 70px;
+          padding: 5px 0;
+          border-radius: 30px;
+          font-size: 12px;
+          background: #f8f8f8;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
         .van-icon{
           margin-left:5px;
         }

@@ -4,12 +4,12 @@
     <van-nav-bar title="文章详情" left-arrow @click-left="$router.back()" />
     <!-- 加载组件的显示，等请求数据成功后才显示list组件的内容，
     当组件被缓存将show2设置为false那么点击每一个组件都会重新显示加载修改等待请求数据成功-->
-    <van-loading v-show="!show2" size="24px" color="#1989fa" style="margin-top: 10px">加载中...</van-loading>
+    <van-loading v-if="!show2" size="24px" color="#1989fa" style="margin-top: 10px">加载中...</van-loading>
     <!-- list 用于包裹所有的新闻详细信息和评论列表内容
     v-show="show2"等待请求数据成功，才进行显示内容
      -->
 
-    <van-list v-show="show2" v-model="loading" ref="list" :finished="finished" finished-text="没有更多了" @load="onLoad">
+    <div v-else>
       <!-- 头部   -->
       <div class="title">
         <div class="header">
@@ -33,49 +33,45 @@
       <van-divider />
       <!-- 中间内容 -->
       <lazy-component>
-        <ArticleConten @click.prevent="contentEvent">
+        <ArticleConten>
           <template>
             <div class="content" v-html="html"></div>
           </template>
         </ArticleConten>
       </lazy-component>
       <!-- 分割线 -->
-      <van-divider dashed>end</van-divider>
-      <!-- 点赞部分 -->
-      <div class="praise" @click.prevent="PraiseEvent">
-        <van-tag v-if="like" type="danger"> <van-icon name="good-job-o" />点赞 </van-tag>
-        <van-tag v-else plain type="danger"> <van-icon name="good-job-o" />已点赞 </van-tag>
-      </div>
 
-      <!-- 评论列表 需要传递 user.aut_photo ， user.aut_name  -->
-      <DiscussVue ref="img" v-for="(item, index) in text" :key="index" :CommentInfo="item"></DiscussVue>
-
-      <!-- 底部导航，进行发布评论分享收藏等 -->
-      <van-tabbar ref="tabbar">
-        <div v-show="input === true">
-          <textarea placeholder="友善评论，理想发言，阳光心灵" v-focus ref="textarea" name="" id="" cols="30" rows="10"></textarea>
-          <span @click.prevent="addDiscuss">发送</span>
-        </div>
-        <div v-show="input === false">
-          <van-icon name="arrow-left" @click.prevent="$router.back()" />
-
-          <input type="text" @focus="FocusEvent" placeholder="发表评论" />
-          <div class="icon">
-            <van-badge :content="text.length">
-              <van-icon name="comment-o" @click.prevent="discussList" />
-            </van-badge>
-            <div @click.prevent="starEvent">
-              <van-icon v-if="this.user.is_collected" color="yellow" name="star" />
-              <van-icon v-else name="star-o" />
-            </div>
-            <van-icon name="share-o" @click.prevent="share" />
+        <!-- 评论列表 需要传递 user.aut_photo ， user.aut_name  -->
+        <div class="Discuss"  >
+          <div class="title" ref="img">
+            <div>全部评论({{ num }})</div>
+            <div style="color: #ccc; font-sont: 15px">{{ user.like_count }}点赞</div>
           </div>
-        </div>
-      </van-tabbar>
-    </van-list>
 
-    <!-- 分享面板 -->
-    <van-share-sheet v-model="showShare" title="立即分享给好友" :options="options" />
+          <van-empty v-show="show" image="error" description="暂无数据" />
+          <van-list  v-show="!show" style="margin: 20px 0" v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+            <DiscussVue v-for="(item, index) in text" :key="index" :CommentInfo="item"></DiscussVue>
+          </van-list>
+        </div>
+
+      <van-tabbar>
+        <van-field @click="InputCilck" v-model="value1" left-icon="smile-o" placeholder="抢沙发..." />
+        <van-icon name="chat-o" :badge="num" @click="discussList" />
+        <van-icon @click="PraiseEvent" v-show="like" class="praise1" name="good-job" />
+        <van-icon @click="PraiseEvent" v-show="!like" class="praise2" name="good-job-o" />
+        <van-icon @click="starEvent" v-show="user.is_collected" class="like1" style="color: pink" name="like" />
+        <van-icon @click="starEvent" v-show="!user.is_collected" class="like2" name="like-o" />
+        <van-icon @click="share" name="share-o" />
+      </van-tabbar>
+      <!-- 分享面板 -->
+      <!-- showShare -->
+      <van-share-sheet v-model="showShare" title="立即分享给好友" :options="options" />
+      <TextareaVue :fun="onClikcRight" position="bottom" rightText="提交" :show="show3" title="评论文章">
+        <template #html>
+          <van-field v-model="message" rows="2" autosize  type="textarea" maxlength="50" placeholder="请输入留言" show-word-limit />
+        </template>
+      </TextareaVue>
+    </div>
   </div>
 </template>
 
@@ -88,7 +84,8 @@ import { GetArticle, GetComment, SendComments, attention, NotAttention, collects
 
 import DiscussVue from '@/components/discuss/discussVue.vue'
 import { SetStorage, RemoveSetStorage, GetStorage } from '@/utils/storage.js'
-
+import $ from 'jquery'
+import TextareaVue from '@/components/textarea/TextareaVue.vue'
 export default {
   data () {
     return {
@@ -107,16 +104,23 @@ export default {
       // 点赞
       like: false,
       // 评论信息的获取，通过传递给组件进行遍历评论
-      text: '',
+      text: [],
       // input 控制显示input还是留言框
       input: false,
       // 控制显示加载中还是文章详情内容
       show2: false,
       //  分享面板的开启于隐藏
       showShare: false,
-      // 分享面板内容
-
-      obj: {},
+      // 发送评论的面板弹窗
+      // 评论的textarse组件的内容message
+      message: '',
+      show3: false,
+      // 显示空状态
+      show: false,
+      // num用于显示全部评论的个数
+      num: '',
+      // 表单绑定
+      value1: '',
       // 定时器的对象
       options: [
         [
@@ -124,28 +128,17 @@ export default {
           { name: '朋友圈', icon: 'wechat-moments' },
           { name: '微博', icon: 'weibo' },
           { name: 'QQ', icon: 'qq' }
+        ],
+        [
+          { name: '复制链接', icon: 'link' },
+          { name: '分享海报', icon: 'poster' },
+          { name: '二维码', icon: 'qrcode' },
+          { name: '小程序码', icon: 'weapp-qrcode' }
         ]
       ]
     }
   },
-  created () {
-    // 获取评论信息
-    GetComment(JSON.parse(GetStorage('art_id')))
-      .then((value) => {
-        if (value) {
-          this.text = value.data.results
-        } else {
-          this.show2 = true
-          hiti({ type1: 'danger', message1: '加载失败' })
-          this.$router.back()
-          hiti.clear()
-        }
-      })
-      .catch((value) => {
-        console.log(value)
-      })
-    console.log('文章组件激活')
-  },
+
   // 自动获取焦点指令
   directives: {
     focus: {
@@ -157,7 +150,8 @@ export default {
   components: {
     // eslint-disable-next-line vue/no-unused-components
     ArticleConten,
-    DiscussVue
+    DiscussVue,
+    TextareaVue
   },
   // 组件缓存
   deactivated () {
@@ -168,6 +162,7 @@ export default {
   async activated () {
     this.html = ''
     GetArticle(JSON.parse(GetStorage('art_id'))).then((value) => {
+      console.log(value)
       if (value) {
         // 主体文本内容
         this.html = value.data.content
@@ -179,27 +174,38 @@ export default {
         this.star = value.data.is_collected
         // 控制显示加载中还是文章详情内容
         this.show2 = true
-      } else {
-        this.show2 = true
-        hiti({ type1: 'danger', message1: '加载失败' })
       }
     })
   },
   methods: {
-    contentEvent () {
-      console.log('内容点击')
-    },
+
     onLoad () {
-      // 拉到最底下显示没有更多数据
-      this.finished = true
+      // 评论列表的绘制
+      GetComment(JSON.parse(GetStorage('art_id')))
+        .then((value) => {
+          this.num = value.data.results.length
+          if (value.data.results.length === 0) {
+            this.show = !this.show
+            return
+          }
+
+          value.data.results.forEach((element) => {
+            this.text.push(element)
+          })
+          this.loading = false
+          if (this.text.length >= value.data.total_count) {
+            this.finished = true
+          }
+        })
+        .catch((value) => {
+          console.log(value)
+        })
     },
-    // 表单获取焦点进行切换为留言框
-    FocusEvent () {
-      this.input = !this.input
-    },
-    // 留言框失去焦点切换回去
-    loadEvent () {
-      this.input = false
+    // 提交评论的发送请求函数
+    onClikcRight () {},
+    // input的点击
+    InputCilck () {
+      this.show3 = true
     },
     // 发送评论
     async addDiscuss () {
@@ -221,34 +227,44 @@ export default {
 
     // 评论显示个数点击滑动到评论底部
     discussList () {
-      console.log('点击')
       // 获取第一个评论信息组件距离页面底部的距离，滚动条向下滚动的距离就是多远
-      const img = this.$refs.img[0]
-      const height = document.documentElement.offsetHeight || document.body.offsetHeight
-      // 进行滚动的元素
-      const article = document.querySelector('.article')
-      // 滚动的终点:使用第一条
-      const destination = img.$el.offsetTop + img.$el.offsetHeight
-      if (img && destination > 0) {
-        // 可视区域
-        roll(article, 30, 100, destination)
-        // 使用定时器进行进行滚动，让评论的内容滚动到可视区域内
-        function roll (obj, speed, num, destination) {
-          clearInterval(obj.time)
-          obj.time = setInterval(() => {
-            const scrollTop = article.scrollTop
+      const img = this.$refs.img.offsetTop
+      console.log(img)
 
-            if (scrollTop > destination) {
-              num = -num
-            }
-            // eslint-disable-next-line no-mixed-operators
-            if ((num > 0 && destination < scrollTop) || (num < 0 && destination > scrollTop)) {
-              clearInterval(obj.time)
-            }
-            obj.scrollTop = scrollTop + num
-          }, speed)
-        }
-      }
+      const height = document.documentElement.offsetHeight || document.body.offsetHeight
+      console.log(img + parseInt(height))
+      const article = document.querySelector('.article')
+      article.scrollTop = img + 400
+
+      // // 屏幕的可视高度
+      // const height = document.documentElement.offsetHeight || document.body.offsetHeight
+      // // 进行滚动的元素
+      // const article = document.querySelector('.article')
+      // // 滚动的终点:使用第一条
+      // const destination = img
+      // if (img && destination > 0) {
+      //   // 可视区域
+      //   article.scrollTop = destination
+      //   // roll(article, 30, 100, destination)
+      //   // // 使用定时器进行进行滚动，让评论的内容滚动到可视区域内
+      //   // function roll (obj, speed, num, destination) {
+      //   //   clearInterval(obj.time)
+      //   //   obj.time = setInterval(() => {
+      //   //     const scrollTop = article.scrollTop
+
+      //   //     if (scrollTop > destination) {
+      //   //       num = -num
+      //   //     }
+      //   //     // eslint-disable-next-line no-mixed-operators
+      //   //     if ((num > 0 && destination < scrollTop) || (num < 0 && destination > scrollTop)) {
+      //   //       console.log('停止')
+      //   //       clearInterval(obj.time)
+      //   //     }
+
+      //   //     obj.scrollTop = scrollTop + num
+      //   //   }, speed)
+      //   // }
+      // }
     },
     // 收藏于取消收藏的点击事件
     starEvent () {
@@ -263,6 +279,7 @@ export default {
     // 分享小图标显示于隐藏分享面板
     share () {
       this.showShare = !this.showShare
+      console.log(this.showShare)
     },
 
     // 点赞于取消点赞事件
@@ -280,7 +297,7 @@ export default {
     attentionEvent () {
       this.attention = !this.attention
       if (this.attention) {
-        attention(this.user.aut_id).then(value => {
+        attention(this.user.aut_id).then((value) => {
           console.log(value)
           if (value === undefined) {
             this.attention = false
@@ -300,12 +317,52 @@ export default {
   overflow: auto;
   font-size: 16px;
   width: 100%;
+  background: #f1f1f1;
+
+  /deep/.van-tabbar {
+    display: flex;
+    align-items: center;
+    background: white !important;
+    > .van-icon /deep/ {
+      font-size: 25px;
+      margin: 0 10px;
+    }
+    .like1 {
+      color: pink !important;
+    }
+    .praise1 {
+      color: crimson !important;
+    }
+    .van-field {
+      height: 30px;
+      border-radius: 15px;
+      margin: 10px;
+      background: #f1f1f1;
+
+      .van-field__left-icon .van-icon {
+        color: #ccc;
+      }
+    }
+  }
+  .Discuss {
+    margin-top: 20px;
+    background: white;
+    .title {
+      width: 100%;
+      height: 40px;
+      border-bottom: 1px solid #f1f1f1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
   .van-loading {
     text-align: center;
   }
   .title {
     display: flex;
     justify-content: space-between;
+    background: white;
     padding: 5px;
     align-items: center;
     .header {
@@ -346,7 +403,7 @@ export default {
   }
   .comment {
     display: flex;
-    flex-direction: column;
+
     padding: 10px;
     .header {
       display: flex;
@@ -383,9 +440,7 @@ export default {
     div {
       display: flex;
       align-items: center;
-      padding: 7px 0;
       justify-content: space-evenly;
-      width: 100%;
       textarea {
         height: 70px;
         background: white;
@@ -422,6 +477,9 @@ export default {
         }
       }
     }
+  }
+  /deep/.van-divider {
+    margin: 0;
   }
   .ActionContent {
     display: flex;
@@ -465,5 +523,11 @@ export default {
 .van-nav-bar {
   position: sticky;
   top: 0;
+}
+/deep/.van-field__value {
+    overflow: visible;
+    background: #f1f1f1;
+    border-radius: 5px;
+    padding: 5px;
 }
 </style>
