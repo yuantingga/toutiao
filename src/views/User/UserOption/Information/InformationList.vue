@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="list">
     <van-list v-if="show" v-model="loading" :finished="finished" :finished-text="text" @load="onLoad">
       <div v-for="item in list" :key="item.id">
         <van-cell>
@@ -15,7 +15,7 @@
             <div style="color:#ccc">{{ item.create_time }}</div>
           </template>
         </van-cell>
-        <div v-if="item.comment_target" class="comment_target">{{ item.comment_target }}</div>\
+        <div v-if="item.comment_target" class="comment_target">{{ item.comment_target }}</div>
         <div v-if="item.comment_content" class="comment_content">{{item.comment_content}}</div>
       </div>
     </van-list>
@@ -32,14 +32,16 @@ export default {
       loading: false,
       finished: false,
       arr: '',
-      inn: '',
+      inn: 1,
       list: [],
       show: true,
       text: '没有更多了'
+
     }
   },
   methods: {
     async  Load (inn, n, cut) {
+      console.log(inn)
       await notifyApi(inn, n, cut).then(value => {
         if (value.data.results.length === 0) {
           this.finished = true
@@ -48,12 +50,12 @@ export default {
           return
         }
         value.data.results.forEach(element => {
-          console.log(element)
           this.list.push(element)
-          if (this.list.length >= value.data.total_count) {
-            this.finished = true
-          }
         })
+        this.loading = false
+        if (this.list.length >= value.data.total_count) {
+          this.finished = true
+        }
       })
     },
 
@@ -62,11 +64,13 @@ export default {
       // setTimeout 仅做示例，真实场景中一般为 ajax 请求
       if (this.num === 0) {
       // 显示全部
-        this.Load(1, 10, '')
+        console.log('加载')
+        this.Load(this.inn, 10, '')
       } else {
       // 显示其他的内容
-        this.Load(1, 10, this.num)
+        this.Load(this.inn, 10, this.num)
       }
+      this.inn++
     }
   }
 }
