@@ -2,7 +2,7 @@
   <div class="app">
     <div class="indexx">
     <router-link to="Index"></router-link>
-    <keep-alive exclude="EditVue,HistoryVue,SmallFour,SearchVue">
+    <keep-alive exclude="EditVue,HistoryVue,SmallFour,SearchVue,Article">
       <router-view></router-view>
     </keep-alive>
     </div>

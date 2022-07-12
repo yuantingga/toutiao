@@ -10,18 +10,26 @@ function GetArticle (str) {
   })
 }
 // 获取评论信息
-function GetComment (id) {
+function GetComment (id, type1, num) {
   console.log(id)
   return axioss({
     url1: '/api/comments',
     params: {
-      type: 'a',
+      type: type1,
       source: id,
-      limit: 10
+      limit: num
     }
   })
 }
 // 发送评论
+function CommentList ({ type, source, offset, limit }) {
+  return axioss({
+    url1: '/api/comments',
+    params: {
+      type, source, offset, limit
+    }
+  })
+}
 function SendComments ({ target, content, artid }) {
   return axioss({
     url1: '/api/comments',
@@ -142,5 +150,5 @@ function CancelLike (id) {
 }
 export {
   CancelLike, SetLike, NotCollects, collects, removeLove, addLove, NotAttention, attention, SendComments, GetComment
-  , GetArticle, collectsList
+  , GetArticle, collectsList, CommentList
 }

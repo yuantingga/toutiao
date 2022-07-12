@@ -1,9 +1,11 @@
 <template>
   <div class="text">
     <van-popup v-model="show1" :position="direction" :style="{ height: '100%', width: '100%' }">
-      <van-nav-bar :title="title1" :right-text="rightText1" left-arrow @click-left="show1 = false" @click-right="onClickRight" />
+      <van-nav-bar :title="title1" :right-text="rightText1" left-arrow @click-left="Back" @click-right="onClickRight" />
       <slot name="html"></slot>
+  <slot name="tabbar" class="tabbar"></slot>
     </van-popup>
+
   </div>
 </template>
 
@@ -29,6 +31,10 @@ export default {
     }
   },
   methods: {
+    Back () {
+      this.show1 = false
+      this.$emit('BackEvent', this.show1)
+    },
     TextareaInput (e) {
       $('.num')[0].innerHTML = e.target.value.length + '/100'
     },
@@ -41,8 +47,10 @@ export default {
 
 <style lang="less" scoped>
 .text{
-  padding: 10px;
+
   overflow: hidden;
+  background: pink;
+
 }
   textarea {
     resize: none;
@@ -62,5 +70,11 @@ export default {
     right: 21px;
     font-size: 15px;
     color: #ccc;
+  }
+  .tabbar{
+    background: palegoldenrod !important;
+    .ico{
+      color: black;
+    }
   }
 </style>

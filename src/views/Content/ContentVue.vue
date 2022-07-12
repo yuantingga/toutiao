@@ -75,9 +75,15 @@ export default {
   async created () {
     try {
       // 获取tabs中的选项数据
-      UserChannels().then((value) => {
-        this.TabsList = value.data.channels
-      })
+      if (GetStorage('UserChannels')) {
+        this.TabsList = JSON.parse(GetStorage('UserChannels'))
+      } else {
+        UserChannels().then((value) => {
+          this.TabsList = value.data.channels
+          SetStorage('UserChannels', JSON.stringify(value.data.channels))
+        })
+      }
+
       SetStorage('Router', JSON.stringify('/Index/Content'))
       EventBUS.$on('cut', (value) => {
         this.value = value

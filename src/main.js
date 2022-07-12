@@ -21,7 +21,7 @@ Vue.filter('descriptor', function (value) {
       return parseInt(d / 60 / 60 / 24 / 12) + '月前'
     }
   }
-
+  console.log(value)
   return `${value.aut_name} ${value.comm_count} 评论 ${formattingDate(value.pubdate)}`
 })
 Vue.filter('countDown', function (value) {

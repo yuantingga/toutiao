@@ -9,6 +9,10 @@ function hiti ({ type1, message1, background1 = '' }) {
     background: background1
   })
 }
+function clear () {
+  return Toast.clear()
+}
 export {
-  hiti
+  hiti,
+  clear
 }

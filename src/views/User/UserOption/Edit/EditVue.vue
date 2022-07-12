@@ -62,7 +62,7 @@
       <van-nav-bar title="简介" right-text="提交" left-arrow @click-left="show4 = false" @click-right="onClickRight" />
 
     </van-popup> -->
-    <TextareaVue :show="show4" :fun="onClickRight" position="right" rightText="提交" title="编辑简介" >
+    <TextareaVue @BackEvent="GetBack" :show="show4" :fun="onClickRight" position="right" rightText="提交" title="编辑简介" >
       <template #html>
 
         <textarea @input="TextareaInput" v-model="textvalue" name="" id="" cols="30" rows="10" minlength="0" maxlength="100" placeholder="请输入简介"></textarea>
@@ -112,6 +112,9 @@ export default {
     }
   },
   methods: {
+    GetBack (value) {
+      this.show4 = value
+    },
     TextareaInput (e) {
       $('.num')[0].innerHTML = e.target.value.length + '/100'
     },
