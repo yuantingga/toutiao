@@ -1,7 +1,35 @@
 <template>
-  <div class="article">
+  <div class="article" @scroll="ArticleScroll">
     <!-- 文章详情的头部 点击小图标进行返回 -->
-    <van-nav-bar title="文章详情" left-arrow @click-left="Back" />
+    <van-nav-bar v-if="!flag" left-arrow @click-left="Back">
+      <template #right>
+        <van-icon name="ellipsis" @click="show4 = true" />
+      </template>
+    </van-nav-bar>
+
+    <van-nav-bar v-else left-arrow>
+      <template #left>
+        <div class="title">
+          <van-icon name="arrow-left" />
+          <div class="header">
+            <div class="img">
+              <van-image :src="user.aut_photo" width="100%" height="100%">
+                <template v-slot:error>加载失败</template>
+              </van-image>
+              <!-- <img width="100%" :src="user.aut_photo" alt="" /> -->
+            </div>
+            <div class="text">
+              <span>{{ user.aut_name }}</span>
+            </div>
+            <em>|</em>
+          </div>
+          <div class="concern" @click.prevent="attentionEvent">
+            <van-tag v-if="attention" type="primary" class="followed" >已关注</van-tag>
+            <van-tag v-else plain class="nofollowed">+关注</van-tag>
+          </div>
+        </div>
+      </template>
+    </van-nav-bar>
     <!-- 加载组件的显示，等请求数据成功后才显示list组件的内容，
     当组件被缓存将show2设置为false那么点击每一个组件都会重新显示加载修改等待请求数据成功-->
     <van-skeleton v-if="!show2" title :row="7" />
@@ -12,8 +40,15 @@
      -->
 
     <div v-else>
+      <div class="HeaderTitle">
+        <h1>{{ user.title }}</h1>
+        <span>{{ user.pubdate }}</span>
+        <span>阅读量{{ user.read_count }}</span>
+        <span>评论{{ num }}</span>
+      </div>
+
       <!-- 头部   -->
-      <div class="title">
+      <div class="title" ref="title">
         <div class="header">
           <div class="img">
             <van-image :src="user.aut_photo" width="100%" height="100%">
@@ -27,13 +62,10 @@
         </div>
         <div class="concern" @click.prevent="attentionEvent">
           <van-tag v-if="attention" type="primary">已关注</van-tag>
-          <van-tag v-else plain type="primary">+关注</van-tag>
+          <van-tag v-else plain class="focus">+关注</van-tag>
         </div>
       </div>
-
       <van-divider />
-      <!-- 中间内容 -->
-
       <ArticleConten>
         <template>
           <div class="content" v-html="html"></div>
@@ -54,7 +86,7 @@
 
         <van-empty v-if="show" image="error" description="还没有评论哦" />
         <van-list v-else style="margin: 20px 0" v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-          <DiscussVue @changedId="ChangedId" @NumberEvent="numberEvent"   v-for="(item, index) in text" :key="index" :CommentInfo="item"></DiscussVue>
+          <DiscussVue @changedId="ChangedId" @NumberEvent="numberEvent" v-for="(item, index) in text" :key="index" :CommentInfo="item"></DiscussVue>
         </van-list>
       </div>
 
@@ -69,14 +101,14 @@
       </van-tabbar>
       <!-- 分享面板 -->
       <!-- showShare -->
+      <van-share-sheet v-model="show4" title="立即分享给好友" :options="options" />
       <van-share-sheet v-model="showShare" title="立即分享给好友" :options="options" />
-
     </div>
     <TextareaVue @BackEvent="GetBack" position="bottom" rightText="发布" title="评论文章" :show="show3" :fun="onClikcRight">
-        <template #html>
-          <van-field v-focue v-model="message" rows="2" autosize type="textarea" maxlength="100" placeholder="请输入留言" show-word-limit />
-        </template>
-      </TextareaVue>
+      <template #html>
+        <van-field v-focue v-model="message" rows="2" autosize type="textarea" maxlength="100" placeholder="请输入留言" show-word-limit />
+      </template>
+    </TextareaVue>
   </div>
 </template>
 
@@ -147,7 +179,14 @@ export default {
           { name: '二维码', icon: 'qrcode' },
           { name: '小程序码', icon: 'weapp-qrcode' }
         ]
-      ]
+      ],
+      // 头部的点击显示分享面板
+      show4: false,
+      // 控制显示哪一个头部
+      flag: false,
+      // 滚动事件的节流的定时器
+      time: false
+
     }
   },
 
@@ -194,6 +233,7 @@ export default {
       this.star = value.is_collected
       // 控制显示加载中还是文章详情内容
       this.show2 = true
+      console.log(JSON.parse(GetStorage(`${artid}`)))
     } else {
       //
       GetArticle(JSON.parse(GetStorage('art_id'))).then((value) => {
@@ -212,10 +252,24 @@ export default {
           SetStorage(JSON.parse(GetStorage('art_id')), JSON.stringify(value.data))
         }
       })
+      console.log(JSON.parse(GetStorage(`${artid}`)))
     }
+    console.log(this.user)
     this.getComment()
   },
   methods: {
+    ArticleScroll (e) {
+      if (this.time === false) {
+        this.time = setTimeout(() => {
+          if (this.$refs.title.offsetTop <= e.target.scrollTop) {
+            this.flag = true
+          } else {
+            this.flag = false
+          }
+          this.time = false
+        }, 1000)
+      }
+    },
     getComment () {
       GetComment(JSON.parse(GetStorage('art_id')), 'a').then((value) => {
         this.text = value.data.results
@@ -228,10 +282,9 @@ export default {
 
           return num
         }, 0)
-        console.log(this.num)
-        console.log(value.data.results)
         this.last_id = value.data.last_id
         this.total_count = value.data.total_count
+        clear()
         if (this.text.length >= this.total_count) {
           this.finished = true
         }
@@ -239,7 +292,7 @@ export default {
     },
     ChangedId (id) {
       console.log('比较id' + id)
-      this.text.forEach(ele => {
+      this.text.forEach((ele) => {
         if (ele.com_id === id) {
           ele.reply_count = this.num
         }
@@ -278,9 +331,9 @@ export default {
           } else {
             const offset = value.data.results[value.data.results.length - 1].com_id
 
-            CommentList({ type, source, offset, limit }).then(value => {
+            CommentList({ type, source, offset, limit }).then((value) => {
               console.log(value.data.results)
-              value.data.results.forEach(ele => {
+              value.data.results.forEach((ele) => {
                 this.text.push(ele)
               })
               console.log(this.text.length)
@@ -305,6 +358,7 @@ export default {
       this.show = false
       this.show3 = false
       this.text = []
+      hiti({ type1: 'loading', message1: '发送中' })
       this.getComment()
     },
     // input的点击
@@ -396,6 +450,58 @@ export default {
   font-size: 16px;
   width: 100%;
   background: #f1f1f1;
+  .van-nav-bar__content {
+    height: 50px;
+
+    .van-nav-bar__left {
+      .img {
+        width: 40px;
+        height: 40px;
+      }
+      .title {
+        padding: 0;
+        background: cornflowerblue;
+        color: white;
+        .van-icon{
+          font-size: 18px;
+        }
+        .followed{
+          color: white;
+          font-size: 18px;
+        }
+        .nofollowed{
+          color: orangered;
+          font-size: 18px;
+          border: 1px solid transparent;
+        }
+      }
+      .van-tag {
+        background: cornflowerblue !important;
+      }
+      .text {
+        span {
+          font-size: 20px;
+        }
+      }
+
+      height: 50px;
+      .header {
+        em {
+          font-size: 14px;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+  .HeaderTitle {
+    background: white;
+    font-size: 25px;
+    padding: 0.13333rem;
+    span {
+      font-size: 16px;
+      color: #ccc;
+    }
+  }
   .van-skeleton {
     margin-top: 20px;
   }
@@ -442,7 +548,7 @@ export default {
 
     .title {
       width: 100%;
-      height: 40px;
+      height: 46px;
       border-bottom: 1px solid #f1f1f1;
       display: flex;
       justify-content: space-between;
@@ -468,16 +574,24 @@ export default {
       }
     }
     .concern {
-      div {
-        background: plum;
-        padding: 5px 10px;
-        border-radius: 5px;
+      margin-right: 5px;
+      .van-tag {
+        height: 20px;
+        border-radius: 15px;
+        background: white;
+        color: black;
+      }
+      .focus {
+        height: 20px;
+        border-radius: 15px;
+        color: black;
         color: white;
+        background: rgb(242, 125, 8);
       }
     }
     .img {
-      width: 56px;
-      height: 56px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       overflow: hidden;
     }

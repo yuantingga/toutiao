@@ -93,6 +93,7 @@
 import { addLove, removeLove, SetCommentOf, GetComment, SendComments } from '@/api/index.js'
 import TextareaVue from '@/components/textarea/TextareaVue.vue'
 import AgainDiscuss from '@/components/discuss/AgainDiscuss.vue'
+import { hiti, clear } from '@/utils/hint'
 
 export default {
   props: ['CommentInfo', 'inn'],
@@ -145,14 +146,16 @@ export default {
       const target = this.list.com_id
       const artid = this.$route.params.number
       const content = this.message
-
+      hiti({ type1: 'loading', message1: '发送中' })
       SendComments({ target, artid, content }).then((value) => {
+        clear()
         this.list2.unshift(value.data.new_obj)
         this.show2 = false
         this.finished = true
 
         this.number++
         this.inn1++
+        this.message = ''
         this.$emit('changedId', this.number)
       })
     },
