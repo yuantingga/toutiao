@@ -54,7 +54,7 @@
 
         <van-empty v-if="show" image="error" description="还没有评论哦" />
         <van-list v-else style="margin: 20px 0" v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-          <DiscussVue  :inn="item.reply_count" v-for="(item, index) in text" :key="index" :CommentInfo="item"></DiscussVue>
+          <DiscussVue @changedId="ChangedId" @NumberEvent="numberEvent"   v-for="(item, index) in text" :key="index" :CommentInfo="item"></DiscussVue>
         </van-list>
       </div>
 
@@ -175,7 +175,6 @@ export default {
 
   // 组件激活
   async created () {
-    console.log('激活')
     this.html = ''
 
     // 第一次加载才进行显示骨架，底二次点击不进行显示
@@ -184,7 +183,7 @@ export default {
 
     if (JSON.parse(GetStorage(`${artid}`))) {
       const value = JSON.parse(GetStorage(`${artid}`))
-      console.log(value)
+
       // 主体文本内容
       this.html = value.content
       // 关注的状态
@@ -215,7 +214,6 @@ export default {
       })
     }
     GetComment(JSON.parse(GetStorage('art_id')), 'a').then((value) => {
-      console.log(value)
       this.text = value.data.results
       if (this.text.length === 0) {
         this.show = true
@@ -234,8 +232,16 @@ export default {
     })
   },
   methods: {
-    NumberEvent (value) {
-      console.log(value)
+    ChangedId (id) {
+      console.log('比较id' + id)
+      this.text.forEach(ele => {
+        if (ele.com_id === id) {
+          ele.reply_count = this.num
+        }
+      })
+    },
+    numberEvent (value) {
+      this.num += 1
     },
     GetBack (value) {
       this.show3 = value
@@ -249,12 +255,18 @@ export default {
       const source = this.$route.params.number
       const offset = this.last_id
       const limit = 10
+      if (this.text.length >= this.total_count) {
+        this.finished = true
+        return
+      }
       CommentList({ type, source, offset, limit })
         .then((value) => {
-          console.log(value.data.results)
+          console.log(value.data)
+
           value.data.results.forEach((element) => {
             this.text.push(element)
           })
+
           const totalcount = value.data.total_count
           if (this.text.length === totalcount) {
             this.finished = true
@@ -282,12 +294,28 @@ export default {
     async onClikcRight () {
       const { data: res } = await SendComments({ target: this.user.art_id, content: this.message, artid: null })
       hiti({ type1: 'loading', message1: '发布中' })
-      this.text.unshift(res.new_obj)
       this.num++
       this.message = ''
       clear()
       this.show = false
       this.show3 = false
+      GetComment(JSON.parse(GetStorage('art_id')), 'a').then((value) => {
+        this.text = value.data.results
+        if (this.text.length === 0) {
+          this.show = true
+          return
+        }
+        this.num = value.data.results.reduce((num, ele) => {
+          num += 1 + +ele.reply_count
+
+          return num
+        }, this.num)
+        this.last_id = value.data.last_id
+        this.total_count = value.data.total_count
+        if (this.text.length >= this.total_count) {
+          this.finished = true
+        }
+      })
     },
     // input的点击
     InputCilck () {

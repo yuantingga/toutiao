@@ -19,8 +19,6 @@ export default {
     const str = '[{"id":1302900300041101987}]'
     const nnn = JSON.parse(str)
     const num = jsonBigint.parse(str)
-    console.log(num)// {id: '1302900300041101987'}
-    console.log(nnn)// {id: 1302900300041102000}
   },
   data () {
     return {

@@ -26,8 +26,10 @@ export default {
   },
   watch: {
     show: function (newval) {
-      console.log(newval)
       this.show1 = newval
+    },
+    title: function (newval) {
+      this.title1 = newval
     }
   },
   methods: {

@@ -24,13 +24,13 @@
     </div>
     <div class="reply">
       <div @click="replyEvent">
-        <div v-if="number == 0"></div>
-        <div v-else>{{ number }}</div>
-        回复<van-icon name="arrow" />
+        <div v-if="inn1 == 0"></div>
+        <div v-else>{{ inn1 }}</div>回复
+        <van-icon name="arrow" />
       </div>
       <span>{{ list.pubdate | countDown }}</span>
     </div>
-    <TextareaVue @BackEvent="GetBack" position="right" rightText="" :show="show" :title="number + '条回复'">
+    <TextareaVue @BackEvent="GetBack" position="right" rightText="" :show="show" :title="number+'条回复'" >
       <template #html>
         <div class="Text">
           <div class="header">
@@ -82,7 +82,7 @@
     </TextareaVue>
     <TextareaVue BackEvent="GetBack2" position="bottom" rightText="发布" :show="show3" title="回复评论" :fun="onClickRight">
       <template #html>
-        <van-field v-model="message" rows="2" autosize type="textarea" maxlength="100" :placeholder="'@' + list.aut_name" show-word-limit />
+        <van-field v-model="message" rows="2" autosize type="textarea" maxlength="50" :placeholder="'@' + list.aut_name" show-word-limit />
       </template>
     </TextareaVue>
   </div>
@@ -115,27 +115,33 @@ export default {
       finished: false,
       collect: false,
       message: '',
-      number: this.CommentInfo.reply_count,
-      inn1: this.inn
+      inn1: this.CommentInfo.reply_count,
+      number: this.CommentInfo.reply_count
     }
   },
   watch: {
+
     CommentInfo: function (newval) {
+      console.log(newval)
       this.list = newval
+      this.inn1 = newval.reply_count
+    },
+    created () {
+      console.log('list')
+      console.log(this.list)
+    },
+
+    number (newval) {
+      console.log(newval)
+      this.number = newval
+      this.$emit('NumberEvent', this.number)
     }
-  },
-  activated () {
-    console.log(this.CommentInfo)
-    this.number = this.list2.reply_count
-  },
-  created () {
-    console.log()
   },
 
   methods: {
     async onClickRight () {
       this.show3 = false
-      this.number = this.number++
+
       const target = this.list.com_id
       const artid = this.$route.params.number
       const content = this.message
@@ -143,8 +149,14 @@ export default {
       SendComments({ target, artid, content }).then((value) => {
         this.list2.unshift(value.data.new_obj)
         this.show2 = false
+        this.finished = true
+
+        this.number++
+        this.inn1++
+        this.$emit('changedId', this.number)
       })
     },
+
     InputClick () {
       this.show3 = true
     },
@@ -153,7 +165,7 @@ export default {
         value.data.results.forEach((element) => {
           this.list2.push(element)
         })
-        console.log(value)
+
         if (value.data.results.length === 0) {
           this.show2 = true
           return

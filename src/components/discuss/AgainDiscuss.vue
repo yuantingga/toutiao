@@ -20,7 +20,7 @@
     </div>
     <div class="content">
       <!-- 评论的文本 -->
-      <p style="color: rgb(102, 102, 102); font-size: 21px; margin-bottom: 6px">{{ ele.content }}2</p>
+      <p style="color: rgb(102, 102, 102); font-size: 21px; margin-bottom: 6px">{{ ele.content }}</p>
     </div>
   </div>
 </template>
@@ -38,7 +38,7 @@ export default {
   },
   watch: {
     discuss (newval) {
-      console.log(newval)
+      this.ele = newval
     }
   },
   methods: {
