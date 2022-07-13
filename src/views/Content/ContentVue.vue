@@ -1,7 +1,7 @@
 <template>
   <div class="content" @scroll="Rolloffset" ref="content">
-    <div class="Header">
-      <van-nav-bar>
+     <div class="Header">
+      <!-- <van-nav-bar>
         <template #left>
           <div class="Headerleft">
             <img src="../../assets/toutiao_logo.4653c8be.png" alt="" />
@@ -10,15 +10,13 @@
         <template #right>
           <van-icon name="plus" />
         </template>
-      </van-nav-bar>
+      </van-nav-bar> -->
       <div class="Tabs">
         <van-tabs v-model="TabsSelect" @change="Tabs" animated>
-          <!--
-          TabsList进行存储tab的所有选项数据，使用的是axios发送请求封装的UserChannels  函数进行获取
-          title绑定的item.name进行选项的文本 -->
+
           <van-tab :name="item.id" v-for="item in TabsList" :title="item.name" :key="item.id"> </van-tab>
         </van-tabs>
-        <!-- addbtn选项的是一个加号他是跳转到频道页面的路由 -->
+
         <div class="addBtn0" @click="Search">
           <van-icon name="search" />
         </div>
