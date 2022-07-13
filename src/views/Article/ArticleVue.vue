@@ -213,25 +213,30 @@ export default {
         }
       })
     }
-    GetComment(JSON.parse(GetStorage('art_id')), 'a').then((value) => {
-      this.text = value.data.results
-      if (this.text.length === 0) {
-        this.show = true
-        return
-      }
-      this.num = value.data.results.reduce((num, ele) => {
-        num += 1 + +ele.reply_count
-
-        return num
-      }, this.num)
-      this.last_id = value.data.last_id
-      this.total_count = value.data.total_count
-      if (this.text.length >= this.total_count) {
-        this.finished = true
-      }
-    })
+    this.getComment()
   },
   methods: {
+    getComment () {
+      GetComment(JSON.parse(GetStorage('art_id')), 'a').then((value) => {
+        this.text = value.data.results
+        if (this.text.length === 0) {
+          this.show = true
+          return
+        }
+        this.num = value.data.results.reduce((num, ele) => {
+          num += 1 + ele.reply_count
+
+          return num
+        }, 0)
+        console.log(this.num)
+        console.log(value.data.results)
+        this.last_id = value.data.last_id
+        this.total_count = value.data.total_count
+        if (this.text.length >= this.total_count) {
+          this.finished = true
+        }
+      })
+    },
     ChangedId (id) {
       console.log('比较id' + id)
       this.text.forEach(ele => {
@@ -299,23 +304,8 @@ export default {
       clear()
       this.show = false
       this.show3 = false
-      GetComment(JSON.parse(GetStorage('art_id')), 'a').then((value) => {
-        this.text = value.data.results
-        if (this.text.length === 0) {
-          this.show = true
-          return
-        }
-        this.num = value.data.results.reduce((num, ele) => {
-          num += 1 + +ele.reply_count
-
-          return num
-        }, this.num)
-        this.last_id = value.data.last_id
-        this.total_count = value.data.total_count
-        if (this.text.length >= this.total_count) {
-          this.finished = true
-        }
-      })
+      this.text = []
+      this.getComment()
     },
     // input的点击
     InputCilck () {
