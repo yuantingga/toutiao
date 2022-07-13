@@ -2,13 +2,13 @@ import { axioss, ajax } from '@/api/Home.js'
 import { GetToken } from '@/utils/token.js'
 // 获取所有频道接口
 function AllChannel () {
-  return axioss({ url1: '/api/channels' })
+  return axioss({ url1: '/channels' })
 }
 // 获取用户频道
 function UserChannels () {
   try {
     return axioss({
-      url1: '/api/user/channels'
+      url1: '/user/channels'
 
     })
   } catch (error) {
@@ -19,7 +19,7 @@ function UserChannels () {
 function AllChannels () {
   try {
     return axioss({
-      url1: '/api/channels'
+      url1: '/channels'
     })
   } catch (error) {
     console.log(error)
@@ -38,7 +38,7 @@ function PutChannel (obj) {
 
   try {
     return axioss({
-      url1: '/api/user/channels',
+      url1: '/user/channels',
       method: 'Put',
       data: {
         channels: chang

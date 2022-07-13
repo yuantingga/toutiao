@@ -5,7 +5,7 @@ import { GetToken } from '@/utils/token.js'
 function User () {
   try {
     return axioss({
-      url1: '/api/user'
+      url1: '/user'
 
     })
   } catch (error) {
@@ -16,7 +16,7 @@ function User () {
 function UserData () {
   try {
     return axioss({
-      url1: '/api/user/profile'
+      url1: '/user/profile'
 
     })
   } catch (error) {
@@ -27,7 +27,7 @@ function UserData () {
 function UserAmend (obj) {
   try {
     return axioss({
-      url1: '/api/user/profile',
+      url1: '/user/profile',
       method: 'PATCH',
       data: {
         ...obj
@@ -41,7 +41,7 @@ function UserAmend (obj) {
 function Setphoto (obj) {
   try {
     return axioss({
-      url1: '/api/user/photo',
+      url1: '/user/photo',
       method: 'PATCH',
       data: obj
 
@@ -54,7 +54,7 @@ function Setphoto (obj) {
 function histories () {
   try {
     return axioss({
-      url1: '/api/user/histories'
+      url1: '/user/histories'
 
     })
   } catch (error) {
@@ -63,7 +63,7 @@ function histories () {
 }
 function DynamicApi (inn, num) {
   return axioss({
-    url1: '/api/user/articles',
+    url1: '/user/articles',
     data: {
       page: inn,
       per_page: num
@@ -72,7 +72,7 @@ function DynamicApi (inn, num) {
 }
 function notice (inn, num) {
   return axioss({
-    url1: '/api/announcements',
+    url1: '/announcements',
     data: {
       page: inn,
       per_page: num
@@ -81,7 +81,7 @@ function notice (inn, num) {
 }
 function Followings (inn, num) {
   return axioss({
-    url1: '/api/user/followings',
+    url1: '/user/followings',
     params: {
       page: inn,
       per_page: num
@@ -91,7 +91,7 @@ function Followings (inn, num) {
 
 function followers (inn, num) {
   return axioss({
-    url1: '/api/user/followers',
+    url1: '/user/followers',
     params: {
       page: inn,
       per_page: num
@@ -100,12 +100,12 @@ function followers (inn, num) {
 }
 function FigureApi () {
   return axioss({
-    url1: '/api/user/figure'
+    url1: '/user/figure'
   })
 }
 function notifyApi (inn, num, type1) {
   return axioss({
-    url1: '/api/user/notify',
+    url1: '/user/notify',
     params: {
       page: inn,
       per_page: num,

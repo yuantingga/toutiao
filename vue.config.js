@@ -55,6 +55,7 @@ if (!isDev) {
 
 // vue.config.js
 module.exports = {
+
   configureWebpack: {
     // 排除打包的某些选项
     externals: externals
