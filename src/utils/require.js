@@ -7,6 +7,7 @@ const ajax = axios.create({
 
   baseURL: 'http://geek.itheima.net/v1_0' // 请求根路径
 })
+console.log('12345')
 
 // 导出ajax
 export default ajax
